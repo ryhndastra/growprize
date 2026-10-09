@@ -11,11 +11,15 @@ interface LoginPanelProps {
   notice?: string;
 }
 
-// panel login kartu putih 2 kolom bergaya xsolla growtopia store (it's rainin' gems + user-id-modal).
+// panel auth kartu putih 2 kolom bergaya xsolla growtopia store, dengan mode login dan register.
 export function LoginPanel({ onLoggedIn, onBack, notice }: LoginPanelProps) {
   const {
-    identity,
-    setIdentity,
+    mode,
+    switchMode,
+    growId,
+    setGrowId,
+    email,
+    setEmail,
     password,
     setPassword,
     error,
@@ -24,7 +28,8 @@ export function LoginPanel({ onLoggedIn, onBack, notice }: LoginPanelProps) {
     submit,
   } = useLoginForm(onLoggedIn);
 
-  const errorId = error ? 'login-form-error' : undefined;
+  const isRegister = mode === 'register';
+  const errorId = error ? 'auth-form-error' : undefined;
 
   return (
     <motion.div
@@ -42,14 +47,16 @@ export function LoginPanel({ onLoggedIn, onBack, notice }: LoginPanelProps) {
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:items-center">
-          {/* kolom kiri: judul hitam tebal, deskripsi, dan form login xsolla */}
+          {/* kolom kiri: judul hitam tebal, deskripsi, dan form auth */}
           <div className="md:col-span-7 flex flex-col justify-between">
             <div className="mb-5 pr-8">
               <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-black">
-                Login Growprize
+                {isRegister ? 'Daftar Growprize' : 'Login Growprize'}
               </h1>
               <p className="mt-2 text-sm sm:text-base text-black/80 leading-relaxed">
-                Masuk menggunakan akun Eclipse PS kamu untuk membuka peti gacha, menukar World Lock, dan menyimpan hadiah ke dalam tas.
+                {isRegister
+                  ? 'Buat akun baru dengan GrowID, email, dan password. Sesi masuk langsung aktif setelah berhasil.'
+                  : 'Masuk menggunakan GrowID, email, dan password akun Eclipse PS kamu untuk membuka peti gacha dan menyimpan hadiah.'}
               </p>
             </div>
 
@@ -58,37 +65,61 @@ export function LoginPanel({ onLoggedIn, onBack, notice }: LoginPanelProps) {
             {!apiConfigured ? (
               <LoginNotice tone="warning" role="alert">
                 Backend belum dikonfigurasi. Set <span className="font-mono">VITE_API_BASE_URL</span>{' '}
-                untuk mengaktifkan login.
+                untuk mengaktifkan auth.
               </LoginNotice>
             ) : null}
 
+            {/* toggle login/register, dibangun dari tombol tab yang sama bentuknya */}
+            <div
+              role="tablist"
+              aria-label="Pilih mode masuk"
+              className="mb-4 grid grid-cols-2 gap-1 rounded-[6px] bg-[#d9f8ff] p-1 shadow-[inset_0_2px_4px_rgba(1,45,55,0.18)]"
+            >
+              <ModeTab active={!isRegister} onClick={() => switchMode('login')}>
+                Login
+              </ModeTab>
+              <ModeTab active={isRegister} onClick={() => switchMode('register')}>
+                Daftar
+              </ModeTab>
+            </div>
+
             <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
               <LoginField
-                id="login-identity"
-                label="GrowID / Email"
+                id="auth-growid"
+                label="GrowID"
                 type="text"
                 autoComplete="username"
-                value={identity}
-                onChange={setIdentity}
-                placeholder="Masukkan GrowID atau email..."
+                value={growId}
+                onChange={setGrowId}
+                placeholder="Contoh: EclipsePS"
                 autoFocus
               />
 
               <LoginField
-                id="login-password"
+                id="auth-email"
+                label="Email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={setEmail}
+                placeholder="nama@email.com"
+              />
+
+              <LoginField
+                id="auth-password"
                 label="Password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete={isRegister ? 'new-password' : 'current-password'}
                 value={password}
                 onChange={setPassword}
-                placeholder="Masukkan password akun..."
+                placeholder={isRegister ? 'Minimal 6 karakter' : 'Masukkan password akun...'}
                 invalid={Boolean(error)}
                 errorId={errorId}
               />
 
               {error ? (
                 <div
-                  id="login-form-error"
+                  id="auth-form-error"
                   role="alert"
                   aria-live="assertive"
                   className="rounded-[5px] border-2 border-red-500 bg-red-50 px-3.5 py-2.5 text-xs font-bold text-red-800"
@@ -103,7 +134,11 @@ export function LoginPanel({ onLoggedIn, onBack, notice }: LoginPanelProps) {
                   disabled={submitting}
                   className="gt-btn-3d cursor-pointer w-full h-13 text-lg sm:text-xl font-bold uppercase"
                 >
-                  {submitting ? 'MENGHUBUNGKAN...' : 'LOGIN SEKARANG'}
+                  {submitting
+                    ? 'MENGHUBUNGKAN...'
+                    : isRegister
+                      ? 'DAFTAR SEKARANG'
+                      : 'LOGIN SEKARANG'}
                 </button>
 
                 <button
@@ -151,5 +186,30 @@ export function LoginPanel({ onLoggedIn, onBack, notice }: LoginPanelProps) {
         </div>
       </div>
     </motion.div>
+  );
+}
+
+interface ModeTabProps {
+  active: boolean;
+  onClick: () => void;
+  children: string;
+}
+
+// tab kecil untuk berpindah mode; menjaga semantik tablist dan keadaan aktif yang jelas.
+function ModeTab({ active, onClick, children }: ModeTabProps) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={`h-9 rounded-[4px] text-sm font-bold uppercase transition-colors ${
+        active
+          ? 'bg-white text-black shadow-[2px_2px_0px_0px_#000000]'
+          : 'text-black/60 hover:text-black'
+      }`}
+    >
+      {children}
+    </button>
   );
 }

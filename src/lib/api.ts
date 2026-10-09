@@ -3,13 +3,15 @@
  *
  * Talks to the friend-provided backend (Express router in gameWebsite.js).
  * Endpoints:
- *   POST /login    { growId, email?, password }   -> { uid, grow_id, email, balance }
- *   GET  /me                                       -> current user (requires session)
- *   POST /logout                                   -> { ok: true }
+ *   POST /register { growId, email, password } -> { uid, grow_id, email, balance }
+ *   POST /login    { growId, email, password } -> { uid, grow_id, email, balance }
+ *   GET  /me                                    -> current user (requires session)
+ *   POST /logout                                -> { ok: true }
  *
- * Auth uses a server-set session COOKIE (valid ~7 days). The browser stores
- * and replays it automatically, so every request MUST set credentials:'include'.
- * We never touch document.cookie by hand.
+ * Auth uses a server-set session COOKIE (valid ~7 days, HttpOnly). The browser
+ * stores and replays it automatically, so every request MUST set
+ * credentials:'include'. The token lives only on the backend; we never read or
+ * write it from JavaScript, and we never carry the API secret on the client.
  */
 
 /**
@@ -79,14 +81,21 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 /**
- * Log in with username (GrowID) OR email + password.
- * The backend expects `growId`; when the user typed an email we pass it in
- * `growId` so a single field works for both.
+ * Log in with GrowID + email + password.
+ * The backend requires all three; a mismatch on any of them returns 401.
  */
-export async function login(usernameOrEmail: string, password: string): Promise<ApiUser> {
+export async function login(growId: string, email: string, password: string): Promise<ApiUser> {
   return request<ApiUser>('/login', {
     method: 'POST',
-    body: JSON.stringify({ growId: usernameOrEmail, email: usernameOrEmail, password }),
+    body: JSON.stringify({ growId, email, password }),
+  });
+}
+
+/** Create a new account, then the backend starts a session (same as login). */
+export async function register(growId: string, email: string, password: string): Promise<ApiUser> {
+  return request<ApiUser>('/register', {
+    method: 'POST',
+    body: JSON.stringify({ growId, email, password }),
   });
 }
 

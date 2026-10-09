@@ -11,6 +11,7 @@ import {
   ApiError,
   fetchMe,
   login as apiLogin,
+  register as apiRegister,
   logout as apiLogout,
   isApiConfigured,
   type ApiUser,
@@ -23,7 +24,8 @@ interface AuthContextValue {
   user: ApiUser | null;
   isGuest: boolean;
   apiConfigured: boolean;
-  login: (usernameOrEmail: string, password: string) => Promise<void>;
+  login: (growId: string, email: string, password: string) => Promise<void>;
+  register: (growId: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -60,8 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const login = useCallback(async (usernameOrEmail: string, password: string) => {
-    const me = await apiLogin(usernameOrEmail, password);
+  const login = useCallback(async (growId: string, email: string, password: string) => {
+    const me = await apiLogin(growId, email, password);
+    setUser(me);
+    setStatus('authed');
+  }, []);
+
+  const register = useCallback(async (growId: string, email: string, password: string) => {
+    const me = await apiRegister(growId, email, password);
     setUser(me);
     setStatus('authed');
   }, []);
@@ -84,9 +92,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isGuest: status !== 'authed',
       apiConfigured: isApiConfigured,
       login,
+      register,
       logout,
     }),
-    [status, user, login, logout]
+    [status, user, login, register, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
