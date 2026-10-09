@@ -1,0 +1,37 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+dist-ssr/
+*.local
+
+# direnv
+.direnv/
+
+# env files dengan nilai lokal, cukup .env.example yang ikut
+.env
+.env.local
+.env.development
+.env.*.local
+
+# editor dan sistem operasi
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# cache tooling
+tsconfig.tsbuildinfo
+.vite/
