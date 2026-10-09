@@ -97,8 +97,8 @@ export function GameHub({
   return (
     <div className="w-full select-none">
       {/* judul utama beranda */}
-      <div className="text-center mb-8 sm:mb-12">
-        <h2 className="gt-lucky-title text-3xl sm:text-5xl tracking-wide">
+      <div className="text-center mb-8 sm:mb-12 px-2">
+        <h2 className="gt-lucky-title text-2xl sm:text-4xl lg:text-5xl tracking-wide break-words">
           SEMUA GAME GROWPRIZE
         </h2>
         <p className="text-xs sm:text-base font-bold text-black/75 mt-2 max-w-2xl mx-auto">
@@ -121,8 +121,8 @@ export function GameHub({
 
       {/* PRIZE POOL DARI SELURUH MINIGAME */}
       <div className="w-full mt-14 sm:mt-20">
-        <div className="text-center mb-8 sm:mb-12">
-          <h3 className="gt-lucky-title text-3xl sm:text-5xl tracking-wide">
+        <div className="text-center mb-8 sm:mb-12 px-2">
+          <h3 className="gt-lucky-title text-2xl sm:text-4xl lg:text-5xl tracking-wide break-words">
             PRIZE POOL MINIGAME
           </h3>
           <p className="text-xs sm:text-base font-bold text-black/75 mt-2">
@@ -134,7 +134,7 @@ export function GameHub({
           {GACHA_ITEMS.slice(0, 12).map((item) => (
             <div
               key={item.id}
-              className="gt-card relative flex flex-col justify-between p-4 transition-transform hover:-translate-y-1.5 shadow-[-6px_8px_0px_#03afef]"
+              className="gt-card relative min-w-0 flex flex-col justify-between p-4 transition-transform hover:-translate-y-1.5 shadow-[-6px_8px_0px_#03afef]"
             >
               <div>
                 <div className="flex items-center justify-between gap-1 mb-2">

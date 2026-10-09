@@ -17,12 +17,12 @@ export function MysteryBoxArena() {
   return (
     <div className="w-full select-none">
       {/* header arena */}
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-1.5 rounded bg-[#d9f8ff] px-3 py-1 text-xs font-bold text-sky-900 border border-sky-300 shadow-xs mb-2">
+      <div className="text-center mb-6 px-2">
+        <div className="inline-flex items-center gap-1.5 rounded bg-[#d9f8ff] px-3 py-1 text-xs font-bold text-sky-900 border border-sky-300 shadow-xs mb-2 max-w-full">
           <Package size={16} weight="fill" className="text-amber-500" />
-          <span>SUPER MYSTERY CHEST OPENER</span>
+          <span className="truncate">SUPER MYSTERY CHEST OPENER</span>
         </div>
-        <h2 className="gt-lucky-title text-3xl sm:text-5xl tracking-wide">
+        <h2 className="gt-lucky-title text-2xl sm:text-4xl lg:text-5xl tracking-wide break-words">
           SUPER MYSTERY BOX
         </h2>
         <p className="text-xs sm:text-sm font-bold text-black/70 mt-1 max-w-xl mx-auto">

@@ -18,12 +18,12 @@ export function TreasureHuntArena() {
   return (
     <div className="w-full select-none">
       {/* header arena */}
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-1.5 rounded bg-[#d9f8ff] px-3 py-1 text-xs font-bold text-sky-900 border border-sky-300 shadow-xs mb-2">
+      <div className="text-center mb-6 px-2">
+        <div className="inline-flex items-center gap-1.5 rounded bg-[#d9f8ff] px-3 py-1 text-xs font-bold text-sky-900 border border-sky-300 shadow-xs mb-2 max-w-full">
           <Shovel size={16} weight="fill" className="text-amber-600" />
-          <span>MINING & DIGGING MINI-ARCADE</span>
+          <span className="truncate">MINING & DIGGING MINI-ARCADE</span>
         </div>
-        <h2 className="gt-lucky-title text-3xl sm:text-5xl tracking-wide">
+        <h2 className="gt-lucky-title text-2xl sm:text-4xl lg:text-5xl tracking-wide break-words">
           TREASURE HUNT MINE
         </h2>
         <p className="text-xs sm:text-sm font-bold text-black/70 mt-1 max-w-xl mx-auto">
@@ -36,7 +36,7 @@ export function TreasureHuntArena() {
         {/* info kesempatan gali dan hasil terkumpul */}
         <div className="w-full max-w-md flex items-center justify-between bg-white/90 px-4 py-2 rounded-lg border border-sky-200 mb-2">
           <div className="text-xs font-bold text-sky-950">
-            Sisa Cangkulan: <span className="font-lucky text-base text-red-600">{picksLeft} Kali</span>
+            Sisa Cangkulan: <span className="font-lucky text-base text-red-700">{picksLeft} Kali</span>
           </div>
           <div className="text-xs font-bold text-emerald-800">
             Hasil Didapat: <span className="font-lucky text-base">+{totalWonWls} WL</span>

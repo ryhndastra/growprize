@@ -23,7 +23,7 @@ export function AnimatedWheelVisual({ rotation, isSpinning }: AnimatedWheelVisua
       </motion.div>
 
       {/* bingkai lingkaran luar roda dengan border emas berkilau */}
-      <div className="relative flex h-64 w-64 sm:h-76 sm:w-76 items-center justify-center rounded-full border-4 border-amber-400 bg-sky-950 p-2 shadow-[0_12px_28px_rgba(0,0,0,0.45),inset_0_4px_8px_rgba(255,255,255,0.4)]">
+      <div className="relative flex h-[min(72vw,16rem)] w-[min(72vw,16rem)] sm:h-[19rem] sm:w-[19rem] items-center justify-center rounded-full border-4 border-amber-400 bg-sky-950 p-2 shadow-[0_12px_28px_rgba(0,0,0,0.45),inset_0_4px_8px_rgba(255,255,255,0.4)]">
         {/* roda yang berputar */}
         <motion.div
           animate={{ rotate: rotation }}

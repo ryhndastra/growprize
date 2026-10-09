@@ -142,8 +142,8 @@ export function GachaArena() {
       {/* KARTU UTAMA GACHA: JUDUL DI ATAS, GAME DI TENGAH, BUTTON PLAY DI BAWAH */}
       <div className="gt-white-card w-full p-5 sm:p-8 flex flex-col items-center shadow-[-8px_10px_0px_#03afef]">
         {/* 1. BAGIAN ATAS: JUDUL GAME, DESKRIPSI & CHANCE BADGES DENGAN INSPECT */}
-        <div className="w-full text-center max-w-3xl">
-          <h2 className="gt-lucky-title text-3xl sm:text-5xl tracking-wide">
+        <div className="w-full text-center max-w-3xl px-2">
+          <h2 className="gt-lucky-title text-2xl sm:text-4xl lg:text-5xl tracking-wide break-words">
             IT&apos;S RAININ&apos; PRIZES
           </h2>
           <p className="text-xs sm:text-base font-bold text-black/80 mt-2 leading-relaxed">
@@ -219,7 +219,7 @@ export function GachaArena() {
 
       {/* KATALOG HADIAH DARI GAME INI */}
       <div className="w-full mt-14 sm:mt-20">
-        <h3 className="gt-lucky-title text-center text-3xl sm:text-5xl tracking-wide mb-10 sm:mb-14">
+        <h3 className="gt-lucky-title text-center text-2xl sm:text-4xl lg:text-5xl tracking-wide mb-10 sm:mb-14 break-words px-2">
           PRIZE POOL CATALOG
         </h3>
 

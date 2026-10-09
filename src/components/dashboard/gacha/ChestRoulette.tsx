@@ -12,13 +12,13 @@ interface ChestRouletteProps {
   soundEnabled: boolean;
 }
 
-function playTickSound() {
+function playTickSound(ctx: AudioContext | null) {
+  if (!ctx) return;
   try {
-    const AudioCtx =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
+    // resume bila browser men-suspend context (kebijakan autoplay)
+    if (ctx.state === 'suspended') {
+      void ctx.resume();
+    }
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
@@ -54,6 +54,7 @@ export function ChestRoulette({
   const viewportRef = useRef<HTMLDivElement>(null);
   const [viewportW, setViewportW] = useState(0);
   const reduceMotion = useReducedMotion();
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     const el = viewportRef.current;
@@ -68,10 +69,24 @@ export function ChestRoulette({
   useEffect(() => {
     if (!isRolling || !soundEnabled || turboEnabled) return;
     const interval = setInterval(() => {
-      playTickSound();
+      playTickSound(audioCtxRef.current);
     }, 90);
     return () => clearInterval(interval);
   }, [isRolling, soundEnabled, turboEnabled]);
+
+  // siapkan satu audio context untuk seluruh sesi, dan tutup bersih saat unmount
+  useEffect(() => {
+    const AudioCtx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (AudioCtx) {
+      audioCtxRef.current = new AudioCtx();
+    }
+    return () => {
+      void audioCtxRef.current?.close();
+      audioCtxRef.current = null;
+    };
+  }, []);
 
   const centerOffset = viewportW > 0 ? viewportW / 2 - CARD_W / 2 : 0;
   const targetX = centerOffset - selectedIndex * PITCH;

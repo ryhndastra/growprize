@@ -91,37 +91,37 @@ export function DashboardHeader({
 
       {/* 2. Bilah tanah STICKY PERMANEN di viewport: direct child di layout sehingga 100% menempel di top-0 dan tidak pernah hilang */}
       <header className="sticky top-0 z-50 w-full gt-dirt-band shadow-[0_4px_14px_rgba(0,0,0,0.5)] select-none">
-        <div className="w-full max-w-[1720px] mx-auto px-3 sm:px-6 flex min-h-[64px] sm:min-h-[72px] items-center justify-between gap-3">
+        <div className="w-full max-w-[1720px] mx-auto px-3 sm:px-6 flex min-h-[64px] sm:min-h-[72px] items-center justify-between gap-2 sm:gap-3">
           {/* sisi kiri: tombol mobile drawer + logo growprize compact + navlinks */}
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
             {onToggleSidebar && (
               <button
                 type="button"
                 onClick={onToggleSidebar}
                 aria-label="Buka menu game"
-                className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-[8px] bg-white/95 text-[#12303c] shadow-[2px_3px_0_#000000] border-2 border-[#03afef] transition-colors hover:bg-[#d9f8ff] cursor-pointer lg:hidden"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] bg-white/95 text-[#12303c] shadow-[2px_3px_0_#000000] border-2 border-[#03afef] transition-colors hover:bg-[#d9f8ff] cursor-pointer lg:hidden"
               >
                 <MenuGlyph className="w-5 h-5" />
               </button>
             )}
 
-            {/* logo compact yang selalu ada di dalam bilah tanah */}
+            {/* logo compact yang selalu ada di dalam bilah tanah; disembunyikan di layar sangat sempit agar navigasi tetap utuh */}
             <button
               type="button"
               onClick={() => onTabChange?.('hub')}
-              className="cursor-pointer shrink-0 focus:outline-none mr-1"
+              className="hidden cursor-pointer shrink-0 focus:outline-none min-[360px]:block"
               title="Kembali ke beranda minigame"
             >
               <img
                 src="/intro/growprize_logo.png"
                 alt="Growprize"
-                className="h-9 sm:h-11 w-auto object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] transition-transform hover:scale-105 active:scale-95"
+                className="h-7 w-auto object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] transition-transform hover:scale-105 active:scale-95 sm:h-11"
                 draggable={false}
               />
             </button>
 
-            {/* navlinks utama di dalam tanah */}
-            <nav aria-label="Menu navigasi utama" className="flex items-center gap-2 sm:gap-3.5 overflow-x-auto no-scrollbar py-1">
+            {/* navlinks utama di dalam tanah, hanya tampil di desktop karena mobile memakai drawer sidebar */}
+            <nav aria-label="Menu navigasi utama" className="hidden lg:flex items-center gap-3.5 py-1">
               {NAV_ITEMS.map((item) => {
                 const isActive = activeTab === item.id;
                 const showBadge = item.id === 'inventory' && inventoryCount > 0;

@@ -22,12 +22,12 @@ export function DiamondDiceArena() {
   return (
     <div className="w-full select-none">
       {/* header arena */}
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-1.5 rounded bg-[#d9f8ff] px-3 py-1 text-xs font-bold text-sky-900 border border-sky-300 shadow-xs mb-2">
+      <div className="text-center mb-6 px-2">
+        <div className="inline-flex items-center gap-1.5 rounded bg-[#d9f8ff] px-3 py-1 text-xs font-bold text-sky-900 border border-sky-300 shadow-xs mb-2 max-w-full">
           <DiceSix size={16} weight="fill" className="text-sky-600" />
-          <span>GROWTOPIA FAIR PROVABLY RNG</span>
+          <span className="truncate">GROWTOPIA FAIR PROVABLY RNG</span>
         </div>
-        <h2 className="gt-lucky-title text-3xl sm:text-5xl tracking-wide">
+        <h2 className="gt-lucky-title text-2xl sm:text-4xl lg:text-5xl tracking-wide break-words">
           HIGH ROLLER DIAMOND DICE
         </h2>
         <p className="text-xs sm:text-sm font-bold text-black/70 mt-1 max-w-xl mx-auto">

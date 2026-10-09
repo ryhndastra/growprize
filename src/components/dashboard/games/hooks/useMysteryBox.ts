@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDashboard } from '../../DashboardContext';
 import { GACHA_ITEMS } from '../../../../data/gachaItems';
 import { GachaItem } from '../../../../types/dashboard';
@@ -70,6 +70,17 @@ export function useMysteryBox() {
   const [lastReward, setLastReward] = useState<OpenedReward | null>(null);
   const [history, setHistory] = useState<OpenedReward[]>([]);
 
+  const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // bersihkan timer pembukaan peti saat unmount agar tidak menulis state ke komponen mati
+  useEffect(() => {
+    return () => {
+      if (openTimerRef.current !== null) {
+        clearTimeout(openTimerRef.current);
+      }
+    };
+  }, []);
+
   const selectedTier = BOX_TIERS.find((b) => b.id === selectedBoxId)!;
   const totalPlayerWls = balance.wls + balance.dls * 100 + balance.bgls * 10000;
   const canAfford = totalPlayerWls >= selectedTier.costWls;
@@ -85,7 +96,8 @@ export function useMysteryBox() {
     setIsOpening(true);
     setLastReward(null);
 
-    setTimeout(() => {
+    openTimerRef.current = setTimeout(() => {
+      openTimerRef.current = null;
       let reward: OpenedReward;
 
       if (selectedTier.id === 'obsidian') {

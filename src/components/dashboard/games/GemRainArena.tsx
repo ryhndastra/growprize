@@ -44,12 +44,12 @@ export function GemRainArena() {
   return (
     <div className="w-full select-none">
       {/* header arena */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 px-2">
         <div className="inline-flex items-center gap-1.5 rounded bg-[#d9f8ff] px-3 py-1 text-xs font-bold text-sky-900 border border-sky-300 shadow-xs mb-2">
           <Coins size={16} weight="fill" className="text-amber-500" />
           <span>REAL-TIME ARCADE CATCHER</span>
         </div>
-        <h2 className="gt-lucky-title text-3xl sm:text-5xl tracking-wide">
+        <h2 className="gt-lucky-title text-2xl sm:text-4xl lg:text-5xl tracking-wide break-words">
           GEM RAIN JACKPOT ARENA
         </h2>
         <p className="text-xs sm:text-sm font-bold text-black/70 mt-1 max-w-xl mx-auto">
@@ -64,15 +64,15 @@ export function GemRainArena() {
           <div className="flex items-center gap-1.5 text-xs font-bold text-sky-950">
             <Timer size={16} weight="bold" className="text-sky-600" />
             <span>
-              WAKTU: <span className="font-lucky text-base text-red-600">{timeLeft}s</span>
+              WAKTU: <span className="font-lucky text-base text-red-700">{timeLeft}s</span>
             </span>
           </div>
 
           <div className="flex items-center gap-4 text-xs font-bold">
-            <span className="text-emerald-700">
+            <span className="text-emerald-800">
               Gems: <span className="font-lucky text-sm">{Math.round(collectedGems)}</span>
             </span>
-            <span className="text-amber-600">
+            <span className="text-amber-800">
               Locks: <span className="font-lucky text-sm">{collectedWls} WL</span>
             </span>
           </div>
@@ -85,7 +85,7 @@ export function GemRainArena() {
         {/* arena jatuh langit */}
         <div
           ref={containerRef}
-          className="relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden bg-gradient-to-b from-[#1b587a] via-[#123e57] to-[#0c2b3d] border-2 border-sky-400 shadow-inner cursor-crosshair"
+          className="relative w-full h-[min(60vh,360px)] sm:h-[420px] rounded-xl overflow-hidden bg-gradient-to-b from-[#1b587a] via-[#123e57] to-[#0c2b3d] border-2 border-sky-400 shadow-inner cursor-crosshair"
         >
           {isPlaying ? (
             gems.map((gem) => (
@@ -97,9 +97,10 @@ export function GemRainArena() {
                   position: 'absolute',
                   left: `${gem.x}%`,
                   top: `${gem.y}%`,
-                  transform: 'translate(-50%, -50%)',
+                  transform: 'translate3d(-50%, -50%, 0)',
+                  willChange: 'transform',
                 }}
-                className="cursor-pointer active:scale-75 transition-transform p-2 focus:outline-none"
+                className="cursor-pointer flex min-h-11 min-w-11 items-center justify-center active:scale-75 transition-transform p-2 focus:outline-none"
               >
                 {getGemVisual(gem.type)}
               </button>

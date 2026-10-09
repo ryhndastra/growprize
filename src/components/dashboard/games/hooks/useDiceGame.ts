@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDashboard } from '../../DashboardContext';
 
 export type BetTarget = 'over' | 'under' | 'seven';
@@ -26,6 +26,17 @@ export function useDiceGame() {
   const [lastOutcome, setLastOutcome] = useState<RollRecord | null>(null);
   const [history, setHistory] = useState<RollRecord[]>([]);
 
+  const rollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // bersihkan interval lemparan saat unmount agar tidak ada setState pada komponen mati
+  useEffect(() => {
+    return () => {
+      if (rollTimerRef.current !== null) {
+        clearInterval(rollTimerRef.current);
+      }
+    };
+  }, []);
+
   const totalPlayerWls = balance.wls + balance.dls * 100 + balance.bgls * 10000;
   const canAfford = totalPlayerWls >= selectedBet;
   const multiplier = target === 'seven' ? 15.0 : 1.95;
@@ -52,6 +63,7 @@ export function useDiceGame() {
 
       if (step > 15) {
         clearInterval(interval);
+        rollTimerRef.current = null;
         // hasil akhir dadu 1-100 fair provably RNG
         const finalScore = Math.floor(Math.random() * 100) + 1;
         const finalD1 = Math.floor(Math.random() * 6) + 1;
@@ -86,6 +98,7 @@ export function useDiceGame() {
         setIsRolling(false);
       }
     }, 80);
+    rollTimerRef.current = interval;
   }, [isRolling, canAfford, selectedBet, spendWls, addLocks, target, multiplier]);
 
   return {

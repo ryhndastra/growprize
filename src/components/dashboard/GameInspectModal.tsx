@@ -104,7 +104,7 @@ export function GameInspectModal({ isOpen, onClose }: GameInspectModalProps) {
               type="button"
               onClick={onClose}
               aria-label="Tutup jendela inspeksi"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 active:scale-95 transition-all shadow-[2px_2px_0_#03afef] cursor-pointer"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 active:scale-95 transition-all shadow-[2px_2px_0_#03afef] cursor-pointer"
             >
               <CloseGlyph className="w-5 h-5" />
             </button>

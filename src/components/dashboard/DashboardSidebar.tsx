@@ -246,7 +246,7 @@ export function DashboardSidebar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-              className="fixed left-0 top-0 bottom-0 z-50 flex h-[100dvh] w-[280px] flex-col bg-white shadow-xl border-r border-sky-300"
+              className="fixed left-0 top-0 bottom-0 z-50 flex h-[100dvh] w-[min(280px,90vw)] flex-col bg-white shadow-xl border-r border-sky-300"
             >
               <div className="flex h-14 shrink-0 items-center justify-between border-b border-sky-100 px-4 bg-white">
                 <div className="flex items-center gap-2">
@@ -259,7 +259,7 @@ export function DashboardSidebar({
                   type="button"
                   onClick={onClose}
                   aria-label="Tutup navigasi"
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-50 text-[#0e2733] hover:bg-sky-100 active:scale-95 transition-all cursor-pointer"
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-sky-50 text-[#0e2733] hover:bg-sky-100 active:scale-95 transition-all cursor-pointer"
                 >
                   <X size={16} weight="bold" />
                 </button>

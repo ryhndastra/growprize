@@ -113,7 +113,7 @@ export function NotificationBell({ notifications: sourceNotifications }: Notific
         aria-expanded={open}
         aria-label={ariaLabel}
         title="Notifikasi"
-        className="group relative flex h-10 sm:h-11 w-10 sm:w-11 items-center justify-center rounded-[8px] bg-white/95 text-[#12303c] shadow-[2px_3px_0_#000000] border-2 border-[#03afef] transition-colors hover:bg-[#d9f8ff] cursor-pointer"
+        className="group relative flex min-h-11 min-w-11 items-center justify-center rounded-[8px] bg-white/95 text-[#12303c] shadow-[2px_3px_0_#000000] border-2 border-[#03afef] transition-colors hover:bg-[#d9f8ff] cursor-pointer"
       >
         <span className="group-hover:animate-bell-ring flex items-center justify-center">
           <Bell size={20} weight={hasUnread ? 'fill' : 'bold'} />
@@ -136,7 +136,7 @@ export function NotificationBell({ notifications: sourceNotifications }: Notific
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -PANEL_OFFSET_Y }}
             transition={reduceMotion ? { duration: 0 } : PANEL_TRANSITION}
-            className="absolute right-0 top-[calc(100%+8px)] z-50 w-80 sm:w-88 origin-top-right rounded-[10px] bg-white p-3.5 text-black shadow-[-6px_8px_0_#03afef] border-2 border-sky-300"
+            className="absolute right-0 top-[calc(100%+8px)] z-50 w-72 sm:w-[22rem] max-w-[calc(100vw-1.5rem)] origin-top-right rounded-[10px] bg-white p-3.5 text-black shadow-[-6px_8px_0_#03afef] border-2 border-sky-300"
           >
             {/* header panel notifikasi */}
             <div className="flex items-center justify-between pb-2 border-b border-sky-100">

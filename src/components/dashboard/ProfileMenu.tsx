@@ -48,11 +48,11 @@ export function ProfileMenu({ growId, isGuest, onLogin }: ProfileMenuProps) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={`Profil ${growId}`}
-        className="flex h-10 sm:h-11 items-center gap-2 rounded-[8px] bg-white/95 px-2.5 sm:px-3 text-black shadow-[2px_3px_0_#000000] border-2 border-[#03afef] transition-colors hover:bg-[#d9f8ff] cursor-pointer"
+        className="flex min-h-11 items-center gap-2 rounded-[8px] bg-white/95 px-2.5 sm:px-3 text-black shadow-[2px_3px_0_#000000] border-2 border-[#03afef] transition-colors hover:bg-[#d9f8ff] cursor-pointer"
       >
         <img src="/xsolla/items/growtoken.png" alt="" className="w-5 h-5 object-contain" />
-        <span className="max-w-[96px] truncate text-xs font-bold text-black">{growId}</span>
-        <span className="rounded bg-[#43b427] px-1.5 py-0.5 text-[9px] font-bold text-white uppercase shadow-[1px_1px_0_#000]">
+        <span className="hidden max-w-[72px] truncate text-xs font-bold text-black sm:block sm:max-w-[96px]">{growId}</span>
+        <span className="hidden rounded bg-[#237a17] px-1.5 py-0.5 text-[9px] font-bold text-white uppercase shadow-[1px_1px_0_#000] sm:inline-block">
           {isGuest ? 'GUEST' : 'LVL 1'}
         </span>
         <ChevronGlyph className={`w-4 h-4 text-black/60 transition-transform ${open ? 'rotate-180' : ''}`} />

@@ -100,7 +100,7 @@ export function GameCard({ game, isGuest, onPlay, onInspect }: GameCardProps) {
             type="button"
             onClick={onInspect}
             title="Inspeksi daftar peluang hadiah"
-            className="flex items-center justify-center h-10 w-10 shrink-0 rounded-lg bg-[#d9f8ff] hover:bg-[#b5eefa] active:scale-95 text-sky-900 border border-sky-400 shadow-[1px_2px_0_#03afef] transition-all cursor-pointer"
+            className="flex items-center justify-center h-11 w-11 shrink-0 rounded-lg bg-[#d9f8ff] hover:bg-[#b5eefa] active:scale-95 text-sky-900 border border-sky-400 shadow-[1px_2px_0_#03afef] transition-all cursor-pointer"
           >
             <MagnifyingGlass size={16} weight="bold" />
           </button>

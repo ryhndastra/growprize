@@ -17,12 +17,12 @@ export function LuckyWheelArena() {
   return (
     <div className="w-full select-none">
       {/* header arena */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 px-2">
         <div className="inline-flex items-center gap-1.5 rounded bg-[#d9f8ff] px-3 py-1 text-xs font-bold text-sky-900 border border-sky-300 shadow-xs mb-2">
           <Sparkle size={16} weight="fill" className="text-amber-500" />
           <span>LUCKY ROULETTE WHEEL</span>
         </div>
-        <h2 className="gt-lucky-title text-3xl sm:text-5xl tracking-wide">
+        <h2 className="gt-lucky-title text-2xl sm:text-4xl lg:text-5xl tracking-wide break-words">
           LUCKY WHEEL OF LOCKS
         </h2>
         <p className="text-xs sm:text-sm font-bold text-black/70 mt-1 max-w-xl mx-auto">

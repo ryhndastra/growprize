@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { WorldLockIcon, DiamondLockIcon } from './GrowtopiaAssets';
 
 interface GrowtopiaWalkIntroProps {
@@ -48,6 +48,7 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
   const [viewportHeight, setViewportHeight] = useState(
     typeof window !== 'undefined' ? window.innerHeight : 800
   );
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const handleResize = () => setViewportHeight(window.innerHeight);
@@ -60,6 +61,16 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
   const chestsRef = useRef<FallingChest[]>([]);
   const sparksRef = useRef<SparkleParticle[]>([]);
   const animFrameRef = useRef<number>(0);
+  const warpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // bersihkan timer warp saat unmount
+  useEffect(() => {
+    return () => {
+      if (warpTimerRef.current !== null) {
+        clearTimeout(warpTimerRef.current);
+      }
+    };
+  }, []);
 
   // ── 1. CINEMATIC CAMERA & TIMELINE CHOREOGRAPHY ──
   useEffect(() => {
@@ -113,6 +124,13 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // reset state fisika agar sesi sebelumnya tidak menumpuk saat komponen di-reuse
+    chestsRef.current = [];
+    sparksRef.current = [];
+
+    // hormati preferensi pengguna: lewati hujan chest berulang berbasis kanvas
+    if (reduceMotion) return;
 
     const W = canvas.offsetWidth;
     const H = canvas.offsetHeight;
@@ -241,12 +259,13 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
       clearInterval(spawnTimer);
       cancelAnimationFrame(animFrameRef.current);
     };
-  }, [chestsActive]);
+  }, [chestsActive, reduceMotion]);
 
   const handleWarpEnter = () => {
     if (isWarping) return;
     setIsWarping(true);
-    setTimeout(() => {
+    warpTimerRef.current = setTimeout(() => {
+      warpTimerRef.current = null;
       onComplete();
     }, 600);
   };
@@ -318,8 +337,12 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
 
           {/* Floating Cartoon Clouds */}
           <motion.div
-            animate={{ x: ['-20vw', '110vw'] }}
-            transition={{ duration: 32, repeat: Infinity, ease: 'linear' }}
+            animate={reduceMotion ? { x: 0 } : { x: ['-20vw', '110vw'] }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { duration: 32, repeat: Infinity, ease: 'linear' }
+            }
             className="absolute top-12 opacity-40 flex items-center"
           >
             <div className="h-10 w-32 rounded-full bg-white/90 shadow-sm" />
@@ -327,8 +350,12 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
           </motion.div>
 
           <motion.div
-            animate={{ x: ['-30vw', '110vw'] }}
-            transition={{ duration: 42, repeat: Infinity, ease: 'linear', delay: 8 }}
+            animate={reduceMotion ? { x: 0 } : { x: ['-30vw', '110vw'] }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { duration: 42, repeat: Infinity, ease: 'linear', delay: 8 }
+            }
             className="absolute top-28 opacity-30 flex items-center"
           >
             <div className="h-8 w-40 rounded-full bg-white/80" />
@@ -347,7 +374,7 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
 
           {/* Right Foliage */}
           <div className="absolute -top-10 -right-10 w-52 h-44 rounded-full bg-[#1e5812] border-4 border-[#0e2c07] opacity-85" />
-          <div className="absolute top-0 right-4 w-40 h-30 rounded-full bg-[#2a7a1a] opacity-80" />
+          <div className="absolute top-0 right-4 w-40 h-[7.5rem] rounded-full bg-[#2a7a1a] opacity-80" />
           {/* Hanging Vine Right */}
           <div className="absolute top-20 right-20 w-3 h-24 bg-[#1e5812] rounded-full border-r border-[#0e2c07]" />
         </div>
@@ -359,7 +386,7 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
         />
 
         {/* ── REAL GROWPRIZE LOGO IMAGE IN SKY ── */}
-        <div className="absolute top-16 z-25 flex flex-col items-center px-4 pointer-events-none">
+        <div className="absolute top-16 z-[25] flex flex-col items-center px-4 pointer-events-none">
           <AnimatePresence>
             {showLogo && (
               <motion.div
@@ -392,7 +419,7 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
         </div>
 
         {/* ── GROUND: AUTHENTIC GROWTOPIA DIRT & PIXEL GRASS LINE (110PX) ── */}
-        <footer className="absolute bottom-0 left-0 right-0 h-[110px] z-25 flex flex-col items-center">
+        <footer className="absolute bottom-0 left-0 right-0 h-[110px] z-[25] flex flex-col items-center">
           {/* Pixel Grass Blades Trim (Layer 1) */}
           <div className="w-full h-3 overflow-hidden pointer-events-none" style={{ imageRendering: 'pixelated' }}>
             <svg className="w-full h-3 block" preserveAspectRatio="none" viewBox="0 0 240 12">
@@ -436,7 +463,7 @@ export function GrowtopiaWalkIntro({ onComplete }: GrowtopiaWalkIntroProps) {
           <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-36 h-4 rounded-full bg-[#0a2005]/75 blur-[2px] pointer-events-none z-10" />
 
           {/* Front Pixel Grass Blades overlapping boots for true grounded 3D depth */}
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-28 flex justify-between pointer-events-none z-35 px-3 opacity-90">
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-28 flex justify-between pointer-events-none z-[35] px-3 opacity-90">
             <div className="w-2 h-3.5 bg-[#5ec91e] border-t border-l border-[#194a05] rounded-t-sm" />
             <div className="w-1.5 h-2.5 bg-[#6edb27] border-t border-[#194a05] rounded-t-sm" />
             <div className="w-2 h-4 bg-[#44b615] border-t border-r border-[#194a05] rounded-t-sm" />

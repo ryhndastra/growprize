@@ -329,7 +329,7 @@ function AmountInput({
       <button
         type="button"
         onClick={setMax}
-        className="text-xs font-bold px-2.5 py-1 rounded-[4px] cursor-pointer shrink-0 bg-[#43b427] hover:bg-[#50d031] text-white shadow-[1.5px_2px_0_#000]"
+        className="text-xs font-bold px-2.5 py-1 rounded-[4px] cursor-pointer shrink-0 bg-[#43b427] hover:bg-[#50d031] text-white shadow-[1.5px_2px_0_#000] relative after:absolute after:-inset-x-1 after:-inset-y-1.5 after:content-[''] sm:after:hidden"
       >
         MAX
       </button>

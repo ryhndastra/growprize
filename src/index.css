@@ -331,6 +331,16 @@
   }
 }
 
+/* sembunyikan scrollbar untuk baris nav dan filter yang digulir horizontal di layar kecil */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @keyframes gt-bell-ring {
   0% { transform: rotate(0deg); }
   20% { transform: rotate(14deg); }
@@ -349,6 +359,7 @@
 *:focus-visible {
   outline: 2px solid #03afef;
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 0 0 6px rgba(12, 31, 39, 0.85);
 }
 
 @media (prefers-reduced-motion: reduce) {

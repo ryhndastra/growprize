@@ -33,15 +33,15 @@ export function BalancePill({ balance, onOpenTutorial }: BalancePillProps) {
   const valueRef = useAnimatedNumber(total, (next) => formatBalance(next).value);
 
   return (
-    <div className="flex h-10 sm:h-11 items-center gap-2 rounded-[8px] bg-white/95 px-2.5 sm:px-3 text-black shadow-[2px_3px_0_#000000] border-2 border-[#03afef]">
+    <div className="flex min-h-11 items-center gap-1.5 rounded-[8px] bg-white/95 px-2 sm:px-3 text-black shadow-[2px_3px_0_#000000] border-2 border-[#03afef]">
       <img
         src="/xsolla/items/world_lock.png"
         alt="World Lock"
-        className="w-5 h-5 object-contain shrink-0"
+        className="hidden h-5 w-5 object-contain shrink-0 sm:block"
         draggable={false}
       />
       <div className="flex flex-col justify-center leading-tight">
-        <span className="text-[9px] font-bold uppercase tracking-wider text-black/55">Balance</span>
+        <span className="hidden text-[9px] font-bold uppercase tracking-wider text-black/70 sm:block">Balance</span>
         <span className="font-mono-num text-xs sm:text-sm font-bold text-black tabular-nums">
           <span ref={valueRef}>{formatBalance(total).value}</span>{' '}
           <span className="text-[10px] font-bold text-sky-900">{unit}</span>
@@ -55,7 +55,7 @@ export function BalancePill({ balance, onOpenTutorial }: BalancePillProps) {
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.92 }}
         transition={{ type: 'spring', stiffness: 500, damping: 24, mass: 0.6 }}
-        className="ml-1 flex h-7 w-7 items-center justify-center rounded-[5px] bg-[#43b427] text-white shadow-[1px_1.5px_0_#000000] transition-colors hover:bg-[#50d031] cursor-pointer"
+        className="ml-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[5px] bg-[#238a13] text-white shadow-[1px_1.5px_0_#000000] transition-colors hover:bg-[#43b427] cursor-pointer relative after:absolute after:-inset-2 after:content-[''] sm:ml-1"
       >
         <PlusGlyph className="w-3.5 h-3.5" />
       </motion.button>
