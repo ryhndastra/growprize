@@ -1,4 +1,7 @@
 import { StepNumberGlyph } from './glyphs';
+import { TopUpForm } from './TopUpForm';
+import { useDashboard } from './DashboardContext';
+import { useAuth } from '../../lib/auth';
 
 interface TopUpTutorialProps {
   onBack: () => void;
@@ -30,11 +33,21 @@ const STEPS: TutorialStep[] = [
   },
 ];
 
-// halaman tutorial cara isi saldo, mode tampilan di dalam dashboard.
+// halaman isi saldo: form topup langsung ke backend, plus panduan bila perlu.
 export function TopUpTutorial({ onBack }: TopUpTutorialProps) {
+  const { balance, convertLocks } = useDashboard();
+  const { refreshUser } = useAuth();
+
   return (
     <div className="w-full select-none">
-      <div className="gt-white-card p-5 sm:p-8">
+      <TopUpForm
+        onToppedUp={(newBalance) => {
+          convertLocks({ ...balance, wls: newBalance });
+          void refreshUser();
+        }}
+      />
+
+      <div className="gt-white-card mt-6 p-5 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-sky-100 pb-5">
           <div>
             <h2 className="font-display text-3xl font-bold tracking-tight text-black sm:text-4xl">

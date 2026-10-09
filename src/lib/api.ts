@@ -23,11 +23,15 @@
  *                If unset, we fall back to the known backend origin.
  */
 const RAW_BASE = import.meta.env.VITE_API_BASE_URL;
-const FALLBACK_ORIGIN = 'https://nexus.gtpscache.site';
-const API_BASE_URL = (RAW_BASE && RAW_BASE.length > 0 ? RAW_BASE : FALLBACK_ORIGIN).replace(
+// Gunakan '/api' sebagai default baik di local (via Vite proxy) maupun di Vercel (via vercel.json rewrites)
+// agar cookie HttpOnly SameSite=Lax selalu dianggap same-origin oleh browser dan aman saat refresh.
+const DEFAULT_ORIGIN = '/api';
+const API_BASE_URL = (RAW_BASE && RAW_BASE.length > 0 ? RAW_BASE : DEFAULT_ORIGIN).replace(
   /\/$/,
   ''
 );
+
+
 
 export interface ApiUser {
   uid: string | number;
@@ -107,6 +111,74 @@ export async function fetchMe(): Promise<ApiUser> {
 /** Destroy the server session and clear the cookie. */
 export async function logout(): Promise<void> {
   await request<{ ok: boolean }>('/logout', { method: 'POST' });
+}
+
+export interface ApiBackpackItem {
+  id: number;
+  item_id: number;
+  item_name: string;
+  count: number;
+  worth: number;
+  rarity: string;
+  color: string;
+  updated_at?: string;
+}
+
+export interface BackpackResponse {
+  items: ApiBackpackItem[];
+  totalCount: number;
+  totalWorth: number;
+}
+
+/** Get user backpack inventory from database. */
+export async function fetchBackpack(): Promise<BackpackResponse> {
+  return request<BackpackResponse>('/backpack', { method: 'GET' });
+}
+
+/** Redeem backpack items directly into the in-game world. */
+export async function redeemBackpack(
+  items: Array<{ itemId: number; quantity: number }>
+): Promise<{ success: boolean; message: string; redeemed: unknown[] }> {
+  return request<{ success: boolean; message: string; redeemed: unknown[] }>('/backpack/redeem', {
+    method: 'POST',
+    body: JSON.stringify({ items }),
+  });
+}
+
+/** Sell backpack items to convert them into user account balance. */
+export async function sellBackpack(
+  items: Array<{ itemId: number; quantity: number }>
+): Promise<{ success: boolean; earned: number; balance: number; message: string; soldItems: unknown[] }> {
+  return request<{ success: boolean; earned: number; balance: number; message: string; soldItems: unknown[] }>('/backpack/sell', {
+    method: 'POST',
+    body: JSON.stringify({ items }),
+  });
+}
+
+/** Top-up account balance. */
+export async function topup(
+  amount: number
+): Promise<{ success: boolean; message: string; balance: number; addedAmount: number }> {
+  return request<{ success: boolean; message: string; balance: number; addedAmount: number }>('/topup', {
+    method: 'POST',
+    body: JSON.stringify({ amount }),
+  });
+}
+
+/** Fetch gacha cases configuration. */
+export async function fetchCases(): Promise<{ cases: unknown[] }> {
+  return request<{ cases: unknown[] }>('/cases', { method: 'GET' });
+}
+
+/** Perform gacha roll against backend atomic balance transaction. */
+export async function rollGacha(
+  caseId: string,
+  itemId: string
+): Promise<{ success: boolean; item: unknown; spinCost: number; balance: number; message: string }> {
+  return request<{ success: boolean; item: unknown; spinCost: number; balance: number; message: string }>('/roll', {
+    method: 'POST',
+    body: JSON.stringify({ caseId, itemId }),
+  });
 }
 
 /** True when the backend base URL is configured (used for graceful UI hints). */

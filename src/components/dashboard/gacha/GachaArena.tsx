@@ -9,6 +9,7 @@ import { ItemSprite } from '../GachaSprites';
 import { useDashboard } from '../DashboardContext';
 import { GameInspectModal } from '../GameInspectModal';
 import { ArrowLeftGlyph, SearchGlyph } from '../glyphs';
+import { WINNER_INDEX, REEL_TOTAL_CARDS } from './reelGeometry';
 
 const SPIN_COST: Record<1 | 5 | 10, { wls: number; dls: number }> = {
   1: { wls: 10, dls: 0 },
@@ -28,19 +29,23 @@ function pickRandomItem(): GachaItem {
   return GACHA_ITEMS[GACHA_ITEMS.length - 1];
 }
 
-function generateReel(winner: GachaItem, loops = 6): { items: GachaItem[]; stopIdx: number } {
+// Menghasilkan reel panjang (65 kartu) ala CS2 case-opening dengan pemenang di kartu index 48
+function generateReel(winner: GachaItem): { items: GachaItem[]; stopIdx: number } {
   const items: GachaItem[] = [];
-  for (let i = 0; i < loops; i++) {
-    for (const base of GACHA_ITEMS) {
-      items.push(base);
+  const total = REEL_TOTAL_CARDS;
+  const stopIdx = WINNER_INDEX;
+
+  for (let i = 0; i < total; i++) {
+    if (i === stopIdx) {
+      items.push(winner);
+    } else if (i === stopIdx - 1) {
+      // Sensasi near-miss khas CS2: taruh item mythic/legendary tepat 1 kartu sebelum pemenang
+      const teaser = GACHA_ITEMS.find((it) => it.rarity === 'mythic') || pickRandomItem();
+      items.push(teaser);
+    } else {
+      items.push(pickRandomItem());
     }
   }
-
-  const midLow = Math.floor(items.length * 0.4);
-  const midHigh = Math.floor(items.length * 0.6);
-  const stopIdx = midLow + Math.floor(Math.random() * (midHigh - midLow));
-
-  items[stopIdx] = winner;
 
   return { items, stopIdx };
 }
@@ -56,15 +61,15 @@ export function GachaArena() {
   const [inspectOpen, setInspectOpen] = useState(false);
 
   const [reelItems, setReelItems] = useState<GachaItem[]>(
-    () => generateReel(GACHA_ITEMS[0], 6).items
+    () => generateReel(GACHA_ITEMS[0]).items
   );
-  const [selectedIndex, setSelectedIndex] = useState(() =>
-    Math.floor(GACHA_ITEMS.length * 6 * 0.5)
-  );
+  const [selectedIndex, setSelectedIndex] = useState(WINNER_INDEX);
+  const [subJitter, setSubJitter] = useState(0);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [wonItems, setWonItems] = useState<GachaItem[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [spinNonce, setSpinNonce] = useState(0);
 
   const handleSpin = (count: 1 | 5 | 10) => {
     if (isRolling) return;
@@ -89,23 +94,32 @@ export function GachaArena() {
     }
 
     const mainWinner = winners[0];
-    const { items: newReel, stopIdx } = generateReel(mainWinner, turboEnabled ? 3 : 6);
+    const { items: newReel, stopIdx } = generateReel(mainWinner);
+    // Variasi sub-pixel landing offset (-22px s/d +22px) agar jarum tidak kaku selalu dead center
+    const jitter = Math.round((Math.random() - 0.5) * 44);
 
     setReelItems(newReel);
     setSelectedIndex(stopIdx);
+    setSubJitter(jitter);
+    setSpinNonce((n) => n + 1);
     setIsRolling(true);
 
-    const spinDuration = turboEnabled ? 750 : 3300;
+    // Durasi putaran ala CS2 case opening: 5 detik (atau 1.1s pada mode turbo)
+    const spinDuration = turboEnabled ? 1100 : 5000;
 
     setTimeout(() => {
       setIsRolling(false);
-      setWonItems(winners);
-      setModalOpen(true);
-      for (const item of winners) {
-        addItemToInventory(item);
-      }
+      // Beri jeda 450ms agar pemain dapat melihat jarum berhenti di kartu pemenang sebelum modal muncul
+      setTimeout(() => {
+        setWonItems(winners);
+        setModalOpen(true);
+        for (const item of winners) {
+          addItemToInventory(item);
+        }
+      }, 450);
     }, spinDuration);
   };
+
 
   const handleClaimAll = () => {
     setModalOpen(false);
@@ -198,8 +212,10 @@ export function GachaArena() {
               isRolling={isRolling}
               reelItems={reelItems}
               selectedIndex={selectedIndex}
+              subJitter={subJitter}
               turboEnabled={turboEnabled}
               soundEnabled={soundEnabled}
+              spinNonce={spinNonce}
             />
           </div>
         </div>
