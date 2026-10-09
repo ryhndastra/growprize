@@ -35,3 +35,7 @@ pnpm-debug.log*
 # cache tooling
 tsconfig.tsbuildinfo
 .vite/
+
+# internal assistant & design drafts
+.opencode/
+DESIGN.md
