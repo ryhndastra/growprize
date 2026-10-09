@@ -1,5 +1,14 @@
 # session growprize gelombang 6 game modular
 
+## gelombang push github (9 okt 2026)
+
+- [x] repo lokal di-init sebagai git dengan branch main.
+- [x] remote origin dipasang ke https://github.com/ryhndastra/growprize.git
+- [x] .gitignore diperluas: node_modules, dist, .direnv, .env.development, tsconfig.tsbuildinfo, cache tooling.
+- [x] README.md ditulis: cara jalan, skrip, konfigurasi env, struktur folder, catatan arsitektur.
+- [x] commit pertama dibuat: 4746780 feat: katalog enam minigame, navbar bersih, dan arsitektur modular. 127 file, tanpa node_modules/dist.
+- [ ] push menunggu kredensial. gh belum login, tidak ada token, tidak ada ssh key, ssh-agent kosong. perlu sho jalankan gh auth login atau set remote ke ssh setelah key dipasang.
+
 ## ringkasan misi gelombang ini
 
 permintaan sho lewat discord palace: hapus daftar game dari navbar (sisakan exchange dan utilitas), samakan semua kartu game jadi seragam, refactor agar tidak jadi god component (pisah custom hooks dan komponen kecil, tanpa prop drilling), tambah game baru sampai enam supaya grid 3x2, beri animasi nyata pada permainan seperti dadu dengan gambar dan geraknya, sertakan laporan daftar file yang diubah dan tugas makoto.
