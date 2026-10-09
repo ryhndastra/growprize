@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { GachaItem } from '../../../types/dashboard';
-import { GrowtopiaDialog, GrowtopiaButton, DiamondLockIcon } from '../../GrowtopiaAssets';
-import { ItemSprite } from '../GachaSprites';
+import { GrowtopiaDialog, GrowtopiaButton } from '../../GrowtopiaAssets';
+import { GrowLockIcon } from '../GrowLockIcon';
+import { GrowItemIcon } from '../GrowItemIcon';
 import { RarityChip } from './RarityTierPills';
 
 interface WinRewardModalProps {
@@ -84,9 +85,9 @@ export function WinRewardModal({
                   <span>Estimasi Nilai:</span>
                   <span className="flex items-center gap-1 font-bold tabular-nums">
                     {totalLabel.asDl ? (
-                      <DiamondLockIcon className="w-4 h-4" />
+                      <GrowLockIcon kind="dl" className="w-4 h-4" />
                     ) : (
-                      <img src="/xsolla/items/world_lock.png" alt="" className="w-4 h-4 object-contain" />
+                      <GrowLockIcon kind="wl" className="w-4 h-4" />
                     )}
                     {totalLabel.text}
                   </span>
@@ -105,7 +106,7 @@ export function WinRewardModal({
                         <RarityChip rarity={item.rarity} className="mb-3 px-2.5 py-1 text-xs" />
 
                         <div className="my-2 gt-float">
-                          <ItemSprite sprite={item.icon} className="w-24 h-24" />
+                          <GrowItemIcon item={item} className="w-24 h-24" requestSize={256} />
                         </div>
 
                         <h3 className="font-display font-bold text-2xl text-black tracking-tight mt-2">
@@ -123,9 +124,9 @@ export function WinRewardModal({
                         </span>
                         <div className="flex items-center gap-1.5 text-sm sm:text-base font-bold text-black tabular-nums">
                           {label.asDl ? (
-                            <DiamondLockIcon className="w-5 h-5" />
+                            <GrowLockIcon kind="dl" className="w-5 h-5" />
                           ) : (
-                            <img src="/xsolla/items/world_lock.png" alt="" className="w-5 h-5 object-contain" />
+                            <GrowLockIcon kind="wl" className="w-5 h-5" />
                           )}
                           <span>{label.text}</span>
                         </div>
@@ -145,7 +146,7 @@ export function WinRewardModal({
                         <RarityChip rarity={item.rarity} className="mb-1.5" />
 
                         <div className="my-2 flex h-16 w-full items-center justify-center rounded-[6px] bg-[#b5eefa]">
-                          <ItemSprite sprite={item.icon} className="w-12 h-12" />
+                          <GrowItemIcon item={item} className="w-12 h-12" requestSize={128} />
                         </div>
 
                         <h4 className="text-xs font-bold text-black truncate w-full">
@@ -154,9 +155,9 @@ export function WinRewardModal({
 
                         <div className="mt-1 flex items-center justify-center gap-1 text-xs font-bold text-[#15803d] tabular-nums">
                           {label.asDl ? (
-                            <DiamondLockIcon className="w-3.5 h-3.5" />
+                            <GrowLockIcon kind="dl" className="w-3.5 h-3.5" />
                           ) : (
-                            <img src="/xsolla/items/world_lock.png" alt="" className="w-3.5 h-3.5 object-contain" />
+                            <GrowLockIcon kind="wl" className="w-3.5 h-3.5" />
                           )}
                           <span>{label.text}</span>
                         </div>

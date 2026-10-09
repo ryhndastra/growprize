@@ -7,6 +7,8 @@ interface RollControlsProps {
   onToggleSound: () => void;
   turboEnabled: boolean;
   onToggleTurbo: () => void;
+  /** label biaya satu kali spin, diambil dari harga case asli di server. */
+  costLabel: string;
 }
 
 // deretan tombol hijau bertumpuk persis seperti tombol buy & cart pada kartu it's rainin' gems di xsolla.growtopiagame.com.
@@ -17,20 +19,26 @@ export function RollControls({
   onToggleSound,
   turboEnabled,
   onToggleTurbo,
+  costLabel,
 }: RollControlsProps) {
+  const multiLabel = (count: number) => {
+    const per = costLabel.replace(/^\$/, '');
+    return `SPIN ${count}X • $${per}`;
+  };
+
   return (
     <div className="w-full flex flex-col gap-3 select-none">
-      {/* tombol utama spin 10x (atau 1x) bergaya tombol utama xsolla */}
+      {/* tombol utama spin 1x bergaya tombol utama xsolla */}
       <button
         type="button"
         disabled={isRolling}
         onClick={() => onSpin(1)}
         className="gt-btn-3d cursor-pointer w-full h-13 text-lg sm:text-2xl font-bold uppercase"
       >
-        <span>{isRolling ? 'MEMUTAR PETI...' : 'SPIN 1X • 10 WL'}</span>
+        <span>{isRolling ? 'MEMUTAR PETI...' : `SPIN 1X • ${costLabel}`}</span>
       </button>
 
-      {/* baris tombol kedua: spin 5x dan spin 10x */}
+      {/* baris tombol kedua: spin 5x dan spin 10x, harga mengikuti jumlah roll. */}
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
@@ -38,7 +46,7 @@ export function RollControls({
           onClick={() => onSpin(5)}
           className="gt-btn-3d cursor-pointer w-full h-11 text-sm sm:text-base font-bold uppercase"
         >
-          <span>SPIN 5X • 50 WL</span>
+          <span>{multiLabel(5)}</span>
         </button>
 
         <button
@@ -47,7 +55,7 @@ export function RollControls({
           onClick={() => onSpin(10)}
           className="gt-btn-3d cursor-pointer w-full h-11 text-sm sm:text-base font-bold uppercase"
         >
-          <span>SPIN 10X • 1 DL</span>
+          <span>{multiLabel(10)}</span>
         </button>
       </div>
 

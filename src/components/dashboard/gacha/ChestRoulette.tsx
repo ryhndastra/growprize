@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { GachaItem } from '../../../types/dashboard';
 import { RarityChip } from './RarityTierPills';
-import { ItemSprite } from '../GachaSprites';
+import { GrowItemIcon } from '../GrowItemIcon';
 import { CARD_W, GAP, PITCH } from './reelGeometry';
 
 interface ChestRouletteProps {
@@ -123,7 +123,8 @@ export function ChestRoulette({
       const tid = setTimeout(() => {
         playTickSound(audioCtxRef.current, isNearEnd ? 1.2 : 1.0);
         setNeedleTick(true);
-        setTimeout(() => setNeedleTick(false), 45);
+        const resetId = setTimeout(() => setNeedleTick(false), 45);
+        timeouts.push(resetId);
       }, ms);
       timeouts.push(tid);
     });
@@ -202,7 +203,6 @@ export function ChestRoulette({
                     key={`${item.id}-${idx}`}
                     item={item}
                     highlighted={isWinner && !isRolling}
-                    isWinner={isWinner}
                   />
                 );
               })}
@@ -287,11 +287,9 @@ const RARITY_ACCENT: Record<string, { border: string; glow: string; bar: string 
 function ReelCard({
   item,
   highlighted,
-  isWinner,
 }: {
   item: GachaItem;
   highlighted: boolean;
-  isWinner: boolean;
 }) {
   const valueLabel = valueInDls(item.valueInDls);
   const accent = RARITY_ACCENT[item.rarity] || RARITY_ACCENT.common;
@@ -313,9 +311,10 @@ function ReelCard({
       </div>
 
       <div className="my-0.5 flex items-center justify-center">
-        <ItemSprite
-          sprite={item.icon}
+        <GrowItemIcon
+          item={item}
           className={`w-10 h-10 transition-transform ${highlighted ? 'scale-110 drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]' : ''}`}
+          requestSize={128}
         />
       </div>
 

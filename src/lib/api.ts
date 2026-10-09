@@ -165,17 +165,39 @@ export async function topup(
   });
 }
 
-/** Fetch gacha cases configuration. */
-export async function fetchCases(): Promise<{ cases: unknown[] }> {
-  return request<{ cases: unknown[] }>('/cases', { method: 'GET' });
+export interface ApiCaseItem {
+  id: string;
+  itemId: number;
+  name: string;
+  count: number;
+  worth: number;
+  rarity?: string;
+  color?: string;
+}
+
+export interface ApiCase {
+  id: string;
+  name?: string;
+  price?: number;
+  items: ApiCaseItem[];
+}
+
+/** Fetch gacha cases configuration from the backend. */
+export async function fetchCases(): Promise<{ cases: ApiCase[] }> {
+  return request<{ cases: ApiCase[] }>('/cases', { method: 'GET' });
+}
+
+export interface RollResult {
+  success: boolean;
+  item: ApiCaseItem;
+  spinCost: number;
+  balance: number;
+  message: string;
 }
 
 /** Perform gacha roll against backend atomic balance transaction. */
-export async function rollGacha(
-  caseId: string,
-  itemId: string
-): Promise<{ success: boolean; item: unknown; spinCost: number; balance: number; message: string }> {
-  return request<{ success: boolean; item: unknown; spinCost: number; balance: number; message: string }>('/roll', {
+export async function rollGacha(caseId: string, itemId: string): Promise<RollResult> {
+  return request<RollResult>('/roll', {
     method: 'POST',
     body: JSON.stringify({ caseId, itemId }),
   });

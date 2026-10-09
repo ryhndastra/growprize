@@ -4,7 +4,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -20,16 +19,15 @@ import {
   INITIAL_LIVE_DROPS,
 } from '../../data/gachaItems';
 import { useAuth } from '../../lib/auth';
-
-const GACHA_COSTS: Record<1 | 5 | 10, { wls: number; dls: number; label: string }> = {
-  1: { wls: 10, dls: 0, label: '10 WL' },
-  5: { wls: 50, dls: 0, label: '50 WL' },
-  10: { wls: 0, dls: 1, label: '1 DL' },
-};
+import { fetchBackpack, type ApiBackpackItem } from '../../lib/api';
+import { normalizeRarity } from './gacha/normalizeRarity';
 
 interface DashboardState {
   balance: WalletBalance;
   inventory: GachaItem[];
+  backpack: ApiBackpackItem[];
+  backpackTotals: { totalCount: number; totalWorth: number };
+  isLoadingBackpack: boolean;
   liveDrops: LiveDropRecord[];
   broadcasts: BroadcastMessage[];
   isGuest: boolean;
@@ -40,20 +38,43 @@ interface DashboardState {
 
 interface DashboardActions {
   addItemToInventory: (item: GachaItem) => void;
-  sellInventoryItem: (item: GachaItem) => void;
-  convertLocks: (next: WalletBalance) => void;
-  deductLocks: (delta: Partial<WalletBalance>) => boolean;
-  addLocks: (delta: Partial<WalletBalance>) => void;
-  spendWls: (amountWls: number) => boolean;
-  canAfford: (count: 1 | 5 | 10) => boolean;
-  costLabel: (count: 1 | 5 | 10) => string;
   requireLogin: (notice?: string) => void;
   setActiveTab: (tab: DashboardTab) => void;
+  refreshBackpack: () => Promise<void>;
+  /**
+   * ledger lokal untuk minigame demo yang belum punya endpoint backend
+   * (dadu, gem rain, lucky wheel, treasure, mystery). nilainya mengambang di atas
+   * saldo server dan sengaja direset saat refresh. gacha tidak memakai jalur ini.
+   */
+  spendWls: (amountWls: number) => boolean;
+  addLocks: (delta: Partial<WalletBalance>) => void;
 }
 
 const DashboardContext = createContext<(DashboardState & DashboardActions) | null>(null);
 
-const EMPTY_BALANCE: WalletBalance = { wls: 0, dls: 0, bgls: 0, gems: 0 };
+// backend menyimpan satu angka saldo. fe memperlakukannya sebagai nilai world lock
+// utama, lalu menurunkan dl dan bgl hanya untuk tata letak tampilan saldo lama.
+function balanceFromBackend(raw: number | null | undefined): WalletBalance {
+  const safe = typeof raw === 'number' && Number.isFinite(raw) && raw > 0 ? raw : 0;
+  return { wls: safe, dls: 0, bgls: 0, gems: 0 };
+}
+
+// item backpack dari server dipetakan ke bentuk katalog fe tanpa mengarang data.
+function toGachaItem(row: ApiBackpackItem): GachaItem {
+  const numericId = Number(row.item_id);
+  return {
+    id: String(row.item_id ?? row.id),
+    itemId: Number.isFinite(numericId) && numericId > 0 ? numericId : undefined,
+    name: row.item_name || 'Unknown Item',
+    category: 'consumable',
+    rarity: normalizeRarity(row.rarity),
+    dropRatePercent: 0,
+    valueInDls: Number.isFinite(Number(row.worth)) ? Number(row.worth) / 100 : 0,
+    icon: 'gemSack',
+    description: `Tersimpan di backpack kamu sebanyak ${Number(row.count) || 0}.`,
+    glowColor: typeof row.color === 'string' && row.color ? row.color : '#4b69ff',
+  };
+}
 
 export function DashboardProvider({
   children,
@@ -64,62 +85,35 @@ export function DashboardProvider({
 }) {
   const { user, isGuest } = useAuth();
 
-  const [inventory, setInventory] = useState<GachaItem[]>([]);
+  const [backpack, setBackpack] = useState<ApiBackpackItem[]>([]);
+  const [backpackTotals, setBackpackTotals] = useState({ totalCount: 0, totalWorth: 0 });
+  const [isLoadingBackpack, setIsLoadingBackpack] = useState(false);
   const [liveDrops, setLiveDrops] = useState<LiveDropRecord[]>(INITIAL_LIVE_DROPS);
   const [broadcasts, setBroadcasts] = useState<BroadcastMessage[]>(MOCK_BROADCASTS);
   const [activeTab, setActiveTab] = useState<DashboardTab>('hub');
 
-  // Saldo backend masih read-only, jadi perubahan lokal (konversi lock, biaya
-  // gacha) disimpan sebagai override di sini. override direset tiap identitas
-  // pemain berganti supaya saldo guest tidak bocor ke akun asli.
-  const [ledgerOverride, setLedgerOverride] = useState<WalletBalance | null>(null);
-  const ledgerOverrideRef = useRef<WalletBalance | null>(null);
-
   const growId = user?.grow_id ?? 'Guest';
   const world = 'GROWPRIZE';
 
-  const backendBalance: WalletBalance = user
-    ? { wls: user.balance ?? 0, dls: 0, bgls: 0, gems: 0 }
-    : EMPTY_BALANCE;
+  // saldo hanya berasal dari server. tidak ada lagi state lokal yang bisa membuat
+  // angka palsu muncul saat refresh.
+  const serverBalance = useMemo(() => balanceFromBackend(user?.balance), [user?.balance]);
 
-  const identity = user?.uid ?? 'guest';
+  // overlay ledger lokal khusus minigame demo (bukan gacha). direset saat identitas
+  // berubah atau data server diperbarui, supaya tidak menutupi angka server selamanya.
+  const [ledgerOverride, setLedgerOverride] = useState<WalletBalance | null>(null);
 
   useEffect(() => {
-    ledgerOverrideRef.current = null;
     setLedgerOverride(null);
-  }, [identity]);
+  }, [user?.uid, user?.balance]);
 
-  const balance = ledgerOverride ?? backendBalance;
+  const balance = ledgerOverride ?? serverBalance;
 
-  const convertLocks = useCallback((next: WalletBalance) => {
-    ledgerOverrideRef.current = next;
-    setLedgerOverride(next);
-  }, []);
-
-  const deductLocks = useCallback(
-    (delta: Partial<WalletBalance>) => {
-      const base = ledgerOverrideRef.current ?? backendBalance;
-      const wls = base.wls - (delta.wls ?? 0);
-      const dls = base.dls - (delta.dls ?? 0);
-      const bgls = base.bgls - (delta.bgls ?? 0);
-      const gems = base.gems - (delta.gems ?? 0);
-      if (wls < 0 || dls < 0 || bgls < 0 || gems < 0) return false;
-      const next = { wls, dls, bgls, gems };
-      ledgerOverrideRef.current = next;
-      setLedgerOverride(next);
-      return true;
-    },
-    [backendBalance]
-  );
-
-  // belanja sejumlah nilai dalam satuan wl dengan memotong lintas denominasi
-  // secara atomik. seluruh saldo lock dinormalkan ke wl dulu, dikurangi, lalu
-  // disusun ulang ke bgl, dl, dan wl supaya tidak pernah menghasilkan angka
-  // negatif atau desimal. gagal bersih bila total tidak cukup.
+  // belanja nilai dalam satuan wl dengan memotong lintas denominasi secara atomik.
   const spendWls = useCallback(
     (amountWls: number) => {
       if (!Number.isFinite(amountWls) || amountWls <= 0) return false;
-      const base = ledgerOverrideRef.current ?? backendBalance;
+      const base = ledgerOverride ?? serverBalance;
       const totalWls = base.wls + base.dls * 100 + base.bgls * 10000;
       if (totalWls < amountWls) return false;
 
@@ -129,33 +123,56 @@ export function DashboardProvider({
       const dls = Math.floor(afterBgls / 100);
       const wls = afterBgls - dls * 100;
 
-      const next = { wls, dls, bgls, gems: base.gems };
-      ledgerOverrideRef.current = next;
-      setLedgerOverride(next);
+      setLedgerOverride({ wls, dls, bgls, gems: base.gems });
       return true;
     },
-    [backendBalance]
+    [ledgerOverride, serverBalance]
   );
 
   const addLocks = useCallback(
     (delta: Partial<WalletBalance>) => {
-      const base = ledgerOverrideRef.current ?? backendBalance;
-      const next = {
+      const base = ledgerOverride ?? serverBalance;
+      setLedgerOverride({
         wls: base.wls + (delta.wls ?? 0),
         dls: base.dls + (delta.dls ?? 0),
         bgls: base.bgls + (delta.bgls ?? 0),
         gems: base.gems + (delta.gems ?? 0),
-      };
-      ledgerOverrideRef.current = next;
-      setLedgerOverride(next);
+      });
     },
-    [backendBalance]
+    [ledgerOverride, serverBalance]
   );
 
+  const inventory = useMemo(() => backpack.map(toGachaItem), [backpack]);
+
+  const refreshBackpack = useCallback(async () => {
+    if (isGuest) {
+      setBackpack([]);
+      setBackpackTotals({ totalCount: 0, totalWorth: 0 });
+      return;
+    }
+    setIsLoadingBackpack(true);
+    try {
+      const res = await fetchBackpack();
+      setBackpack(Array.isArray(res.items) ? res.items : []);
+      setBackpackTotals({
+        totalCount: Number(res.totalCount) || 0,
+        totalWorth: Number(res.totalWorth) || 0,
+      });
+    } catch {
+      // sesi mungkin sudah tidak valid; biarkan data lama agar ui tidak berkedip kosong.
+    } finally {
+      setIsLoadingBackpack(false);
+    }
+  }, [isGuest]);
+
+  useEffect(() => {
+    void refreshBackpack();
+  }, [refreshBackpack, user?.uid]);
+
+  // mencatat item menang ke feed live drop dan broadcast sistem saja.
+  // kepemilikan item yang sebenarnya selalu berasal dari server lewat refreshBackpack.
   const addItemToInventory = useCallback(
     (item: GachaItem) => {
-      setInventory((prev) => [item, ...prev]);
-
       const newDrop: LiveDropRecord = {
         id: `drop-${Date.now()}`,
         player: growId,
@@ -181,32 +198,13 @@ export function DashboardProvider({
     [growId]
   );
 
-  const sellInventoryItem = useCallback((item: GachaItem) => {
-    setInventory((prev) => {
-      const idx = prev.findIndex((i) => i.id === item.id);
-      if (idx === -1) return prev;
-      const copy = [...prev];
-      copy.splice(idx, 1);
-      return copy;
-    });
-  }, []);
-
-  const canAfford = useCallback(
-    (count: 1 | 5 | 10) => {
-      if (isGuest) return false;
-      const cost = GACHA_COSTS[count];
-      const available = balance.wls + balance.dls * 100;
-      return available >= cost.wls + cost.dls * 100;
-    },
-    [isGuest, balance]
-  );
-
-  const costLabel = useCallback((count: 1 | 5 | 10) => GACHA_COSTS[count].label, []);
-
   const value = useMemo(
     () => ({
       balance,
       inventory,
+      backpack,
+      backpackTotals,
+      isLoadingBackpack,
       liveDrops,
       broadcasts,
       isGuest,
@@ -214,19 +212,18 @@ export function DashboardProvider({
       world,
       activeTab,
       addItemToInventory,
-      sellInventoryItem,
-      convertLocks,
-      deductLocks,
-      addLocks,
-      spendWls,
-      canAfford,
-      costLabel,
       requireLogin: onRequireLogin,
       setActiveTab,
+      refreshBackpack,
+      spendWls,
+      addLocks,
     }),
     [
       balance,
       inventory,
+      backpack,
+      backpackTotals,
+      isLoadingBackpack,
       liveDrops,
       broadcasts,
       isGuest,
@@ -234,14 +231,10 @@ export function DashboardProvider({
       world,
       activeTab,
       addItemToInventory,
-      sellInventoryItem,
-      convertLocks,
-      deductLocks,
-      addLocks,
-      spendWls,
-      canAfford,
-      costLabel,
       onRequireLogin,
+      refreshBackpack,
+      spendWls,
+      addLocks,
     ]
   );
 

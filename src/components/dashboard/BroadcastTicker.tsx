@@ -64,14 +64,6 @@ export function BroadcastTicker() {
             >
               {activeTab === 'gacha' ? 'LIHAT JACKPOT' : 'BUKA GACHA'}
             </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('exchange')}
-              className="cursor-pointer h-11 sm:h-12 px-5 rounded-[4px] bg-[#d9f8ff] hover:bg-[#b5eefa] text-black font-bold text-xs sm:text-sm uppercase shadow-[2.5px_3px_0px_0px_#03afef] transition-colors"
-            >
-              TUKAR LOCK
-            </button>
           </div>
         </div>
 

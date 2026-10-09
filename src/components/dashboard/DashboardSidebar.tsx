@@ -6,8 +6,6 @@ import {
   Package,
   DiceSix,
   Coins,
-  Swap,
-  Backpack,
   Trophy,
   X,
   GameController,
@@ -21,7 +19,6 @@ import type { GlyphKey } from './glyphRegistry';
 interface DashboardSidebarProps {
   activeTab: DashboardTab;
   onTabChange: (tab: DashboardTab) => void;
-  inventoryCount: number;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -31,7 +28,6 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({
   activeTab,
   onTabChange,
-  inventoryCount,
   isOpen,
   onClose,
 }: DashboardSidebarProps) {
@@ -64,14 +60,10 @@ export function DashboardSidebar({
         return <DiceSix size={20} weight="fill" className={className} />;
       case 'flame':
         return <Coins size={20} weight="fill" className={className} />;
-      case 'swap':
-        return <Swap size={20} weight="bold" className={className} />;
       case 'wheel':
         return <Crosshair size={20} weight="bold" className={className} />;
       case 'scratch':
         return <Compass size={20} weight="fill" className={className} />;
-      case 'bag':
-        return <Backpack size={20} weight="fill" className={className} />;
       case 'status':
         return <Trophy size={20} weight="fill" className={className} />;
       default:
@@ -80,14 +72,6 @@ export function DashboardSidebar({
   };
 
   const renderBadge = (item: NavItem) => {
-    if (item.id === 'inventory' && inventoryCount > 0) {
-      return (
-        <span className="shrink-0 rounded-full bg-[#fde047] px-2 py-0.5 text-[10px] font-bold text-black tabular-nums shadow-xs">
-          {inventoryCount > 99 ? '99+' : inventoryCount}
-        </span>
-      );
-    }
-
     if (!item.badge) return null;
 
     if (item.badgeType === 'live') {

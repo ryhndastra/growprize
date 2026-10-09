@@ -3,6 +3,7 @@ import { BalancePill } from './BalancePill';
 import { NotificationBell, type AppNotification } from './NotificationBell';
 import { ProfileMenu } from './ProfileMenu';
 import { MenuGlyph } from './glyphs';
+import { Backpack } from '@phosphor-icons/react';
 
 interface DashboardHeaderProps {
   player: PlayerProfile;
@@ -16,11 +17,9 @@ interface DashboardHeaderProps {
   broadcasts?: BroadcastMessage[];
 }
 
-// navbar hanya memuat navigasi global dan utilitas, game dipilih melalui beranda atau sidebar
+// navbar hanya memuat navigasi utama, exchange dihapus dan inventory pindah ke icon backpack
 const NAV_ITEMS: Array<{ id: DashboardTab; label: string }> = [
   { id: 'hub', label: 'SEMUA GAME' },
-  { id: 'exchange', label: 'EXCHANGE' },
-  { id: 'inventory', label: 'INVENTORY' },
   { id: 'leaderboard', label: 'JACKPOT' },
   { id: 'tutorial', label: 'CARA TOP UP' },
 ];
@@ -124,7 +123,6 @@ export function DashboardHeader({
             <nav aria-label="Menu navigasi utama" className="hidden lg:flex items-center gap-3.5 py-1">
               {NAV_ITEMS.map((item) => {
                 const isActive = activeTab === item.id;
-                const showBadge = item.id === 'inventory' && inventoryCount > 0;
                 return (
                   <button
                     key={item.id}
@@ -138,21 +136,35 @@ export function DashboardHeader({
                     }`}
                   >
                     {item.label}
-                    {showBadge && (
-                      <span className="ml-1 inline-flex items-center justify-center rounded-full bg-[#43b427] px-1.5 py-0.2 text-[10px] font-bold text-white shadow-[1px_1.5px_0_#000]">
-                        {inventoryCount > 99 ? '99+' : inventoryCount}
-                      </span>
-                    )}
                   </button>
                 );
               })}
             </nav>
           </div>
 
-          {/* sisi kanan: balance pill, notification bell, dan profile menu */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* sisi kanan: balance pill, notification bell, backpack icon button, dan profile menu */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             <BalancePill balance={balance} onOpenTutorial={onOpenTutorial} />
             <NotificationBell notifications={bellNotifications} />
+
+            {/* Tombol Backpack / Inventory di sebelah kiri Account */}
+            <button
+              type="button"
+              onClick={() => onTabChange?.('inventory')}
+              aria-label="Buka Inventory Tas Item"
+              title="Tas Item / Inventory"
+              className={`relative flex min-h-11 min-w-11 items-center justify-center rounded-[8px] bg-white/95 px-2.5 text-black shadow-[2px_3px_0_#000000] border-2 border-[#03afef] transition-all hover:bg-[#d9f8ff] active:scale-95 cursor-pointer ${
+                activeTab === 'inventory' ? 'bg-[#d9f8ff] ring-2 ring-[#43b427]' : ''
+              }`}
+            >
+              <Backpack size={22} weight="bold" className="text-black" />
+              {inventoryCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#43b427] px-1 text-[10px] font-bold text-white shadow-[1px_1.5px_0_#000]">
+                  {inventoryCount > 99 ? '99+' : inventoryCount}
+                </span>
+              )}
+            </button>
+
             <ProfileMenu
               growId={player.growId}
               isGuest={isGuest}

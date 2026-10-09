@@ -10,13 +10,6 @@ interface ProfileMenuProps {
   onLogin: () => void;
 }
 
-// avatar geometris sederhana dari inisial growId, bukan foto orang.
-function initialOf(growId: string): string {
-  const trimmed = (growId ?? '').trim();
-  if (trimmed.length === 0) return '?';
-  return trimmed.charAt(0).toUpperCase();
-}
-
 // profil pemain di pojok kanan navbar dengan menu kecil yang bisa dibuka tutup.
 export function ProfileMenu({ growId, isGuest, onLogin }: ProfileMenuProps) {
   const { logout } = useAuth();
@@ -48,13 +41,9 @@ export function ProfileMenu({ growId, isGuest, onLogin }: ProfileMenuProps) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={`Profil ${growId}`}
-        className="flex min-h-11 items-center gap-2 rounded-[8px] bg-white/95 px-2.5 sm:px-3 text-black shadow-[2px_3px_0_#000000] border-2 border-[#03afef] transition-colors hover:bg-[#d9f8ff] cursor-pointer"
+        className="flex min-h-11 items-center gap-1.5 sm:gap-2 rounded-[8px] bg-white/95 px-3 text-black shadow-[2px_3px_0_#000000] border-2 border-[#03afef] transition-colors hover:bg-[#d9f8ff] cursor-pointer"
       >
-        <img src="/xsolla/items/growtoken.png" alt="" className="w-5 h-5 object-contain" />
-        <span className="hidden max-w-[72px] truncate text-xs font-bold text-black sm:block sm:max-w-[96px]">{growId}</span>
-        <span className="hidden rounded bg-[#237a17] px-1.5 py-0.5 text-[9px] font-bold text-white uppercase shadow-[1px_1px_0_#000] sm:inline-block">
-          {isGuest ? 'GUEST' : 'LVL 1'}
-        </span>
+        <span className="max-w-[110px] truncate text-xs sm:text-sm font-bold text-black">{growId}</span>
         <ChevronGlyph className={`w-4 h-4 text-black/60 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 

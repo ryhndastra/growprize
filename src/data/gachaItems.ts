@@ -170,7 +170,7 @@ export const MOCK_BROADCASTS: BroadcastMessage[] = [
   {
     id: 'bc-3',
     author: 'MOD_Kaiser',
-    message: 'Exchange rate locked: 100 WL = 1 DL • 100 DL = 1 BGL • Instant automatic warp deposit.',
+    message: 'Top up saldo kini langsung masuk ke akunmu. Selamat bermain di Eclipse PS!',
   },
 ];
 

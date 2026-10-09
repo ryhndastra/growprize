@@ -1,7 +1,6 @@
 import type { ComponentType } from 'react';
 import {
   ArrowLeftGlyph,
-  BagGlyph,
   BoltGlyph,
   CheckGlyph,
   FlameGlyph,
@@ -13,7 +12,6 @@ import {
   ScratchCardGlyph,
   SearchGlyph,
   StatusDotGlyph,
-  SwapGlyph,
   WheelGlyph,
 } from './glyphs';
 
@@ -24,11 +22,9 @@ export type GlyphKey =
   | 'scratch'
   | 'mystery'
   | 'gacha'
-  | 'swap'
   | 'back'
   | 'search'
   | 'flame'
-  | 'bag'
   | 'bolt'
   | 'check'
   | 'lock'
@@ -46,11 +42,9 @@ export const GLYPH_REGISTRY: Record<GlyphKey, ComponentType<GlyphComponentProps>
   scratch: ScratchCardGlyph,
   mystery: MysteryBoxGlyph,
   gacha: GachaGlyph,
-  swap: SwapGlyph,
   back: ArrowLeftGlyph,
   search: SearchGlyph,
   flame: FlameGlyph,
-  bag: BagGlyph,
   bolt: BoltGlyph,
   check: CheckGlyph,
   lock: LockGlyph,

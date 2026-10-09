@@ -1,6 +1,5 @@
 import { StepNumberGlyph } from './glyphs';
 import { TopUpForm } from './TopUpForm';
-import { useDashboard } from './DashboardContext';
 import { useAuth } from '../../lib/auth';
 
 interface TopUpTutorialProps {
@@ -29,20 +28,18 @@ const STEPS: TutorialStep[] = [
   },
   {
     title: 'Pakai saldo untuk main',
-    body: 'Saldo yang sudah masuk bisa langsung dipakai untuk memutar Gacha Roulette, mengonversi lock di Lock Exchange, atau menyimpan hadiah di Tas Item.',
+    body: 'Saldo yang sudah masuk bisa langsung dipakai untuk memutar Gacha Roulette, atau membuka minigame lain, dan hadiahmu tersimpan otomatis di Tas Item.',
   },
 ];
 
 // halaman isi saldo: form topup langsung ke backend, plus panduan bila perlu.
 export function TopUpTutorial({ onBack }: TopUpTutorialProps) {
-  const { balance, convertLocks } = useDashboard();
   const { refreshUser } = useAuth();
 
   return (
     <div className="w-full select-none">
       <TopUpForm
-        onToppedUp={(newBalance) => {
-          convertLocks({ ...balance, wls: newBalance });
+        onToppedUp={() => {
           void refreshUser();
         }}
       />

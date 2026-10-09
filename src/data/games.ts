@@ -56,17 +56,15 @@ export const GAME_CATALOG: GameDefinition[] = [
 ];
 
 export interface NavUtilityItem {
-  tab: 'exchange' | 'inventory' | 'leaderboard' | 'tutorial';
+  tab: 'leaderboard' | 'tutorial';
   label: string;
   glyphKey: string;
   /** hanya informasi nyata; jumlah inventori diisi runtime oleh sidebar. */
   countKey?: 'inventory';
 }
 
-// utilitas non-game yang tetap hidup di sidebar dan header.
+// utilitas non-game yang tetap hidup di sidebar (exchange dan inventory dihapus dari sidebar sesuai permintaan Sho).
 export const NAV_UTILITY_ITEMS: NavUtilityItem[] = [
-  { tab: 'exchange', label: 'Lock Exchange', glyphKey: 'swap' },
-  { tab: 'inventory', label: 'Tas Item', glyphKey: 'bag', countKey: 'inventory' },
   { tab: 'leaderboard', label: 'Live Jackpot', glyphKey: 'flame' },
   { tab: 'tutorial', label: 'Cara Isi Saldo', glyphKey: 'home' },
 ];

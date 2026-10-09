@@ -23,9 +23,7 @@ const GAME_BADGES: Partial<Record<DashboardTab, { badge: string; badgeType: NavI
   treasure_hunt: { badge: 'BARU', badgeType: 'new' },
 };
 
-const UTILITY_BADGES: Partial<Record<NavUtilityItem['tab'], { badge: string; badgeType: NavItem['badgeType'] }>> = {
-  exchange: { badge: 'INSTANT', badgeType: 'instant' },
-};
+const UTILITY_BADGES: Partial<Record<NavUtilityItem['tab'], { badge: string; badgeType: NavItem['badgeType'] }>> = {};
 
 function toNavItem(game: (typeof GAME_CATALOG)[number]): NavItem {
   const badge = GAME_BADGES[game.tab];
@@ -50,8 +48,6 @@ function toUtilityItem(item: NavUtilityItem): NavItem {
 }
 
 const UTILITY_HINTS: Record<NavUtilityItem['tab'], string> = {
-  exchange: 'Tukar WL, DL, dan BGL',
-  inventory: 'Koleksi hadiahmu',
   leaderboard: 'Pemenang terbaru',
   tutorial: 'Cara mengisi saldo',
 };

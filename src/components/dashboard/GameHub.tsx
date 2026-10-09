@@ -177,6 +177,7 @@ export function GameHub({
       <GameInspectModal
         isOpen={inspectOpen}
         onClose={() => setInspectOpen(false)}
+        items={GACHA_ITEMS}
       />
     </div>
   );

@@ -1,8 +1,8 @@
 import { motion } from 'motion/react';
 import { WalletBalance } from '../../types/dashboard';
-import { WorldLockIcon } from '../GrowtopiaAssets';
 import { PlusGlyph } from './glyphs';
 import { useAnimatedNumber } from './useAnimatedNumber';
+import { lockIconUrl, type LockIconKind } from '../../lib/growIcons';
 
 interface BalancePillProps {
   balance: WalletBalance;
@@ -18,40 +18,46 @@ export function totalInWls(balance: WalletBalance | null | undefined): number {
   return wls + dls * 100 + bgls * 10000;
 }
 
-// tampilkan saldo dalam DL bila mencapai minimal 100 WL, jika tidak dalam WL.
-export function formatBalance(totalWls: number): { value: string; unit: string } {
-  if (!Number.isFinite(totalWls) || totalWls <= 0) return { value: '0', unit: 'WL' };
-  if (totalWls >= 100) return { value: (totalWls / 100).toFixed(2), unit: 'DL' };
-  return { value: totalWls.toFixed(2), unit: 'WL' };
+// saldo ditampilkan dalam unit terbesar yang masih masuk akal:
+// bgl bila >= 10000 wl, dl bila >= 100 wl, selain itu wl.
+export function formatBalance(totalWls: number): { value: string; unit: string; kind: LockIconKind } {
+  if (!Number.isFinite(totalWls) || totalWls <= 0) {
+    return { value: '0', unit: 'WL', kind: 'wl' };
+  }
+  if (totalWls >= 10000) {
+    return { value: (totalWls / 10000).toFixed(2), unit: 'BGL', kind: 'bgl' };
+  }
+  if (totalWls >= 100) {
+    return { value: (totalWls / 100).toFixed(2), unit: 'DL', kind: 'dl' };
+  }
+  return { value: totalWls.toFixed(2), unit: 'WL', kind: 'wl' };
 }
 
-// satu-satunya penanda saldo di navbar, dengan tombol plus menuju tutorial isi saldo.
+// satu-satunya penanda saldo di navbar. ikon lock diambil dinamis dari endpoint
+// grow-item-icon sesuai unit saldo yang sedang ditampilkan, plus tombol isi saldo.
 export function BalancePill({ balance, onOpenTutorial }: BalancePillProps) {
   const total = totalInWls(balance);
-  const { unit } = formatBalance(total);
-  // angka saldo dianimasikan lewat ref, unit tetap jadi node statis terpisah.
+  const { unit, kind } = formatBalance(total);
   const valueRef = useAnimatedNumber(total, (next) => formatBalance(next).value);
+  const iconSrc = lockIconUrl(kind, 128);
 
   return (
     <div className="flex min-h-11 items-center gap-1.5 rounded-[8px] bg-white/95 px-2 sm:px-3 text-black shadow-[2px_3px_0_#000000] border-2 border-[#03afef]">
       <img
-        src="/xsolla/items/world_lock.png"
-        alt="World Lock"
-        className="hidden h-5 w-5 object-contain shrink-0 sm:block"
+        src={iconSrc}
+        alt=""
+        className="h-6 w-6 object-contain shrink-0"
         draggable={false}
       />
-      <div className="flex flex-col justify-center leading-tight">
-        <span className="hidden text-[9px] font-bold uppercase tracking-wider text-black/70 sm:block">Balance</span>
-        <span className="font-mono-num text-xs sm:text-sm font-bold text-black tabular-nums">
-          <span ref={valueRef}>{formatBalance(total).value}</span>{' '}
-          <span className="text-[10px] font-bold text-sky-900">{unit}</span>
-        </span>
-      </div>
+      <span className="font-mono-num text-xs sm:text-sm font-bold text-black tabular-nums inline-flex items-baseline gap-1">
+        <span ref={valueRef}>{formatBalance(total).value}</span>
+        <span className="text-[10px] font-bold text-sky-900">{unit}</span>
+      </span>
       <motion.button
         type="button"
         onClick={onOpenTutorial}
-        aria-label="Buka tutorial cara isi saldo"
-        title="Cara isi saldo"
+        aria-label="Buka halaman isi saldo"
+        title="Isi saldo"
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.92 }}
         transition={{ type: 'spring', stiffness: 500, damping: 24, mass: 0.6 }}

@@ -9,7 +9,6 @@ export function TreasureHuntArena() {
     tiles,
     totalWonWls,
     roundCompleted,
-    costWls,
     canAfford,
     startHunt,
     digTile,

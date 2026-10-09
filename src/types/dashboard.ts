@@ -6,7 +6,6 @@ export type DashboardTab =
   | 'gem_rain'
   | 'lucky_wheel'
   | 'treasure_hunt'
-  | 'exchange'
   | 'inventory'
   | 'leaderboard'
   | 'tutorial';
@@ -39,6 +38,8 @@ export interface GachaItem {
   valueInDls: number;
   /** Key referencing a vector sprite in GachaSprites.tsx (no emoji). */
   icon: GachaSpriteKey;
+  /** Growtopia numeric item id for the remote icon endpoint. */
+  itemId?: number;
   description: string;
   glowColor: string;
 }

@@ -1,13 +1,14 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { GACHA_ITEMS } from '../../data/gachaItems';
 import { RarityTier, GachaItem } from '../../types/dashboard';
-import { ItemSprite } from './GachaSprites';
+import { GrowItemIcon } from './GrowItemIcon';
 import { CloseGlyph } from './glyphs';
 import { MagnifyingGlass } from '@phosphor-icons/react';
 
 interface GameInspectModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** katalog hadiah aktif dari server; dipakai agar ikon memakai itemId asli. */
+  items: GachaItem[];
 }
 
 const TIER_GROUPS: Array<{
@@ -61,7 +62,7 @@ const TIER_GROUPS: Array<{
 ];
 
 // modal inspeksi detail hadiah dan peluang drop rate setiap rarity item.
-export function GameInspectModal({ isOpen, onClose }: GameInspectModalProps) {
+export function GameInspectModal({ isOpen, onClose, items }: GameInspectModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -130,8 +131,8 @@ export function GameInspectModal({ isOpen, onClose }: GameInspectModalProps) {
           {/* daftar detail item per kategori */}
           <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-5">
             {TIER_GROUPS.map((grp) => {
-              const items = GACHA_ITEMS.filter((it) => it.rarity === grp.tier);
-              if (items.length === 0) return null;
+              const tierItems = items.filter((it) => it.rarity === grp.tier);
+              if (tierItems.length === 0) return null;
 
               return (
                 <div key={grp.tier} className="rounded-[10px] bg-[#f0fbff] border border-sky-200 p-3 sm:p-4">
@@ -140,18 +141,18 @@ export function GameInspectModal({ isOpen, onClose }: GameInspectModalProps) {
                       {grp.label} ({grp.rateLabel})
                     </span>
                     <span className="text-xs font-bold text-black/60">
-                      {items.length} item tersedia
+                      {tierItems.length} item tersedia
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {items.map((item: GachaItem) => (
+                    {tierItems.map((item: GachaItem) => (
                       <div
                         key={item.id}
                         className="flex items-center gap-3 rounded-[8px] bg-white p-2.5 shadow-[2px_3px_0_#03afef] border border-sky-100"
                       >
                         <div className="gt-inset flex h-14 w-14 shrink-0 items-center justify-center rounded-[6px]">
-                          <ItemSprite sprite={item.icon} className="h-10 w-10" />
+                          <GrowItemIcon item={item} className="h-10 w-10" requestSize={128} />
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-display text-xs sm:text-sm font-bold text-black">

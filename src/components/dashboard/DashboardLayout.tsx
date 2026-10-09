@@ -12,7 +12,6 @@ import { DiamondDiceArena } from './games/DiamondDiceArena';
 import { GemRainArena } from './games/GemRainArena';
 import { LuckyWheelArena } from './games/LuckyWheelArena';
 import { TreasureHuntArena } from './games/TreasureHuntArena';
-import { LockExchange } from './exchange/LockExchange';
 import { InventoryGrid } from './inventory/InventoryGrid';
 import { LiveDropsList } from './live/LiveDropsList';
 import { TopUpTutorial } from './TopUpTutorial';
@@ -77,7 +76,6 @@ function DashboardShell() {
         <DashboardSidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          inventoryCount={inventory.length}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
@@ -145,10 +143,6 @@ function TabPanel() {
 
   if (activeTab === 'treasure_hunt') {
     return <TreasureHuntArena />;
-  }
-
-  if (activeTab === 'exchange') {
-    return <LockExchange />;
   }
 
   if (activeTab === 'inventory') {
