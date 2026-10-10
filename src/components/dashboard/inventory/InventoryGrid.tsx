@@ -139,6 +139,8 @@ function describeError(err: unknown): string {
   return 'Terjadi kesalahan. Coba lagi.';
 }
 
+import { formatLocks } from '../../../lib/lockCurrency';
+
 function InventorySummary({
   totalItems,
   totalWorth,
@@ -147,6 +149,7 @@ function InventorySummary({
   totalWorth: number;
 }) {
   const safeTotal = Number.isFinite(totalWorth) ? totalWorth : 0;
+  const formatted = formatLocks(safeTotal);
   return (
     <div className="gt-white-card p-5 sm:p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="flex items-center gap-3.5">
@@ -165,9 +168,10 @@ function InventorySummary({
 
       <div className="flex items-center gap-2.5 rounded-[8px] bg-[#d9f8ff] px-4 py-3 text-black">
         <span className="text-xs sm:text-sm font-bold text-black/75">Nilai Total:</span>
-        <span className="font-bold text-base sm:text-lg text-[#15803d] tabular-nums">
-          ${safeTotal.toFixed(2)}
-        </span>
+        <div className="flex items-center gap-1.5 font-bold text-base sm:text-lg text-[#15803d] tabular-nums">
+          <img src={formatted.iconUrl} alt={formatted.unit} className="w-5 h-5 object-contain" />
+          <span>{formatted.text}</span>
+        </div>
       </div>
     </div>
   );
@@ -231,13 +235,15 @@ function InventoryCard({
   const rarity = normalizeRarity(item.rarity);
   const worth = normalizeWorthUsd(item.worth);
   const count = Number(item.count) || 0;
+  const itemLock = formatLocks(worth);
 
   return (
     <div className="group gt-card p-3.5 flex flex-col items-center justify-between transition-transform hover:-translate-y-1">
       <div className="w-full flex items-center justify-between gap-1 mb-2">
         <RarityChip rarity={rarity} />
         <div className="flex items-center gap-1 text-xs font-bold text-black tabular-nums">
-          <span>{formatUsd(worth)}</span>
+          <img src={itemLock.iconUrl} alt={itemLock.unit} className="w-4 h-4 object-contain" />
+          <span>{itemLock.text}</span>
         </div>
       </div>
 

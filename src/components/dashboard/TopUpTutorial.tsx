@@ -24,7 +24,7 @@ const STEPS: TutorialStep[] = [
   },
   {
     title: 'Tunggu saldo masuk',
-    body: 'Setelah pembayaran dikonfirmasi admin, saldo dolar (USD) akan masuk ke akunmu. Nilai Balance di navbar akan ikut berubah setelah server memperbarui data.',
+    body: 'Setelah pembayaran dikonfirmasi admin, saldo lock (WL/DL/BGL) akan langsung masuk ke akunmu. Nilai Balance di navbar akan otomatis diperbarui.',
   },
   {
     title: 'Pakai saldo untuk main',
@@ -90,7 +90,7 @@ export function TopUpTutorial({ onBack }: TopUpTutorialProps) {
           </li>
           <li className="flex gap-2.5">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#43b427]" aria-hidden="true" />
-            <span>Saldo tersimpan dalam dolar (USD) dan langsung dipakai di semua game tanpa konversi.</span>
+            <span>Saldo tersimpan dalam lock (100 WL = 1 DL, 100 DL = 1 BGL) dan otomatis terkonversi di Balance navbar.</span>
           </li>
           <li className="flex gap-2.5">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#43b427]" aria-hidden="true" />

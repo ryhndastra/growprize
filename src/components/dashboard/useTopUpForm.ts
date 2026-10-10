@@ -5,7 +5,7 @@ import { ApiError, topup } from '../../lib/api';
 const MIN_AMOUNT = 0.1;
 const MAX_AMOUNT = 10000;
 
-const PRESET_AMOUNTS = [1, 5, 10, 25, 50, 100];
+const PRESET_AMOUNTS = [10, 50, 100, 500, 1000, 10000];
 
 export function useTopUpForm(onSuccess: (newBalance: number, message: string) => void) {
   const [amount, setAmount] = useState('');

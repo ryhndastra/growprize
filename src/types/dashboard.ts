@@ -12,10 +12,12 @@ export type DashboardTab =
 
 export type RarityTier = 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
-// saldo akun disimpan backend dalam usd murni. satu field saja agar tidak ada
-// lagi konversi lintas denominasi yang bikin angka saldo melenceng.
 export interface WalletBalance {
   usd: number;
+  totalWls?: number;
+  wls?: number;
+  dls?: number;
+  bgls?: number;
 }
 
 export interface PlayerProfile {
