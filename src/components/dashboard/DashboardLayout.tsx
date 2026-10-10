@@ -15,6 +15,7 @@ import { TreasureHuntArena } from './games/TreasureHuntArena';
 import { InventoryGrid } from './inventory/InventoryGrid';
 import { LiveDropsList } from './live/LiveDropsList';
 import { TopUpTutorial } from './TopUpTutorial';
+import { FooterGround } from '../common/FooterGround';
 
 interface DashboardLayoutProps {
   onReplayIntro: () => void;
@@ -158,54 +159,5 @@ function TabPanel() {
 
 // kaki halaman tanah rumput resmi dengan ornamen yang menapak pas di atas rumput
 function FooterBar() {
-  return (
-    <footer className="relative mt-24 sm:mt-32 w-full gt-footer-ground text-white select-none">
-      {/* ornamen televisi, ayam, dan mobil yang menapak pas persis di atas garis rumput */}
-      <div className="pointer-events-none relative mx-auto w-full max-w-[1400px] h-0" aria-hidden="true">
-        <img
-          src="/xsolla/tv_footer.png"
-          alt=""
-          className="hidden sm:block absolute bottom-0 left-6 w-24 sm:w-28 h-auto object-contain -mb-1"
-          draggable={false}
-        />
-        <img
-          src="/xsolla/chicken.png"
-          alt=""
-          className="hidden sm:block absolute bottom-0 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-auto object-contain -mb-1"
-          draggable={false}
-        />
-        <img
-          src="/xsolla/car.png"
-          alt=""
-          className="hidden sm:block absolute bottom-0 right-8 w-48 sm:w-64 h-auto object-contain -mb-1"
-          draggable={false}
-        />
-      </div>
-
-      {/* konten teks footer di dalam tanah */}
-      <div className="mx-auto flex w-full max-w-[1400px] flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:py-10">
-        <div className="flex items-center gap-3">
-          <img
-            src="/intro/growprize_logo.png"
-            alt="Growprize"
-            className="h-9 w-auto object-contain drop-shadow"
-            draggable={false}
-          />
-          <div className="text-left">
-            <div className="flex items-center gap-2 text-sm font-bold text-white text-shadow-gt">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#43b427] ring-2 ring-white" />
-              <span>Eclipse PS Server Online | World: GROWPRIZE</span>
-            </div>
-            <p className="text-xs font-semibold text-white/85">
-              Official Growtopia Web Store Aesthetic | Powered by Eclipse PS
-            </p>
-          </div>
-        </div>
-
-        <p className="text-center text-xs font-bold text-white/90 text-shadow-gt-soft sm:text-right max-w-md">
-          Growtopia and its assets are registered trademarks of Ubisoft. Fan platform for Eclipse PS.
-        </p>
-      </div>
-    </footer>
-  );
+  return <FooterGround className="relative mt-24 sm:mt-32 w-full text-white min-h-[260px] sm:min-h-[300px]" maxWidthClass="max-w-[1400px]" />;
 }

@@ -156,22 +156,22 @@ export const GACHA_ITEMS: GachaItem[] = [
 ];
 
 export const MOCK_BROADCASTS: BroadcastMessage[] = [
-  {
-    id: 'bc-1',
-    author: 'SYSTEM',
-    message: 'ECLIPSE PS MEGA JACKPOT POOL REACHED 420 BGLs! SPIN TO WIN!',
-    isJackpot: true,
-  },
-  {
-    id: 'bc-2',
-    author: 'Player_Zack',
-    message: 'Bro just pulled Rayman Fist from 5x Spin!! Holy crap thank you GROWPRIZE!!',
-  },
-  {
-    id: 'bc-3',
-    author: 'MOD_Kaiser',
-    message: 'Top up saldo kini langsung masuk ke akunmu. Selamat bermain di Eclipse PS!',
-  },
+  // {
+  //   id: 'bc-1',
+  //   author: 'SYSTEM',
+  //   message: 'ECLIPSE PS MEGA JACKPOT POOL REACHED 420 BGLs! SPIN TO WIN!',
+  //   isJackpot: true,
+  // },
+  // {
+  //   id: 'bc-2',
+  //   author: 'Player_Zack',
+  //   message: 'Bro just pulled Rayman Fist from 5x Spin!! Holy crap thank you GROWPRIZE!!',
+  // },
+  // {
+  //   id: 'bc-3',
+  //   author: 'MOD_Kaiser',
+  //   message: 'Top up saldo kini langsung masuk ke akunmu. Selamat bermain di Eclipse PS!',
+  // },
 ];
 
 export const INITIAL_LIVE_DROPS: LiveDropRecord[] = [

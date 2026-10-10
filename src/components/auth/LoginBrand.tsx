@@ -1,7 +1,7 @@
 // header bar bilah kayu berumput dan karakter growtopia resmi dari xsolla store untuk halaman login.
 export function LoginBrand({ onBack }: { onBack?: () => void }) {
   return (
-    <div className="relative mb-6 w-full">
+    <div className="relative mb-4 sm:mb-5 w-full">
       {/* baris atas: logo growprize di kiri dan deretan karakter + pohon palem + penyihir di kanan */}
       <div className="relative flex items-end justify-between px-2 pt-2">
         <img

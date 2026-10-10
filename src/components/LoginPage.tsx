@@ -1,4 +1,4 @@
-import { LoginBackdrop } from './auth/LoginBackdrop';
+import { WorldBackdrop } from './common/WorldBackdrop';
 import { LoginPanel } from './auth/LoginPanel';
 
 interface LoginPageProps {
@@ -10,9 +10,8 @@ interface LoginPageProps {
 // entry halaman masuk dengan kanvas langit dan pijakan rumput xsolla growtopia store.
 export function LoginPage({ onLoggedIn, onBack, notice }: LoginPageProps) {
   return (
-    <div className="relative flex min-h-[100dvh] w-full items-start justify-center overflow-x-hidden bg-[#54bfec] px-4 pt-6 pb-28 select-none">
-      <LoginBackdrop />
+    <WorldBackdrop>
       <LoginPanel onLoggedIn={onLoggedIn} onBack={onBack} notice={notice} />
-    </div>
+    </WorldBackdrop>
   );
 }

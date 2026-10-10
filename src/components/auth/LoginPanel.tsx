@@ -36,17 +36,17 @@ export function LoginPanel({ onLoggedIn, onBack, notice }: LoginPanelProps) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="relative z-20 w-full max-w-4xl pb-24"
+      className="relative z-20 w-full max-w-4xl"
     >
       <LoginBrand onBack={onBack} />
 
-      <div className="relative gt-white-card p-5 sm:p-8">
+      <div className="relative gt-white-card p-5 sm:p-7">
         {/* tombol tutup bulat hitam di pojok kanan atas kartu */}
         <div className="absolute right-4 top-4 z-10">
           <LoginCloseButton onBack={onBack} />
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:items-center">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:items-center">
           {/* kolom kiri: judul hitam tebal, deskripsi, dan form auth */}
           <div className="md:col-span-7 flex flex-col justify-between">
             <div className="mb-5 pr-8">
