@@ -1,17 +1,19 @@
 import { useRef } from 'react';
 import { Coins, Sparkle, Trophy, Timer } from '@phosphor-icons/react';
 import { useGemRain, FallingGem } from './hooks/useGemRain';
+import { formatUsd } from '../../../lib/money';
 
 export function GemRainArena() {
   const {
     isPlaying,
     timeLeft,
     collectedGems,
-    collectedWls,
+    collectedUsd,
     combo,
     gems,
     gameResult,
     canAfford,
+    costUsd,
     startGame,
     catchGem,
   } = useGemRain();
@@ -20,11 +22,11 @@ export function GemRainArena() {
 
   const getGemVisual = (type: FallingGem['type']) => {
     switch (type) {
-      case 'wl':
+      case 'coin':
         return (
           <img
-            src="/xsolla/items/world_lock.png"
-            alt="WL"
+            src="/xsolla/items/growtoken.png"
+            alt="Koin"
             className="w-10 h-10 object-contain drop-shadow"
             draggable={false}
           />
@@ -53,7 +55,7 @@ export function GemRainArena() {
           GEM RAIN JACKPOT ARENA
         </h2>
         <p className="text-xs sm:text-sm font-bold text-black/70 mt-1 max-w-xl mx-auto">
-          Klik butiran gems dan World Lock yang berjatuhan dari langit sebelum menyentuh tanah!
+          Klik butiran gems dan koin saldo yang berjatuhan dari langit sebelum menyentuh tanah!
         </p>
       </div>
 
@@ -73,7 +75,7 @@ export function GemRainArena() {
               Gems: <span className="font-lucky text-sm">{Math.round(collectedGems)}</span>
             </span>
             <span className="text-amber-800">
-              Locks: <span className="font-lucky text-sm">{collectedWls} WL</span>
+              Saldo: <span className="font-lucky text-sm">{formatUsd(collectedUsd)}</span>
             </span>
           </div>
 
@@ -121,7 +123,7 @@ export function GemRainArena() {
                   <div className="mt-4 flex items-center gap-4 bg-white/20 px-6 py-2.5 rounded-full font-lucky text-lg">
                     <span className="text-emerald-300">+{Math.round(gameResult.gems)} Gems</span>
                     <span>•</span>
-                    <span className="text-amber-300">+{gameResult.wls} World Lock</span>
+                    <span className="text-amber-300">+{formatUsd(gameResult.usd)} Saldo</span>
                   </div>
                 </div>
               ) : (
@@ -155,16 +157,16 @@ export function GemRainArena() {
               }`}
             >
               {!canAfford
-                ? 'SALDO KURANG (BIAYA 2 WL)'
+                ? `SALDO KURANG (BIAYA ${formatUsd(costUsd)})`
                 : gameResult
-                ? 'MAIN LAGI (BIAYA 2 WL)'
-                : 'MULAI HUJAN PERMATA (BIAYA 2 WL)'}
+                ? `MAIN LAGI (BIAYA ${formatUsd(costUsd)})`
+                : `MULAI HUJAN PERMATA (BIAYA ${formatUsd(costUsd)})`}
             </button>
           )}
 
           <div className="flex items-center justify-center gap-2 text-xs font-bold text-black/60">
             <Sparkle size={15} weight="fill" className="text-amber-500" />
-            <span>20 Detik • Tangkap WL & Gems • Saldo Langsung Ditambahkan</span>
+            <span>20 Detik • Tangkap Koin & Gems • Saldo Langsung Ditambahkan</span>
           </div>
         </div>
       </div>

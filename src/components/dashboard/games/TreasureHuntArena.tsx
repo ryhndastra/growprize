@@ -1,15 +1,17 @@
 import { Shovel, Trophy, ShieldCheck } from '@phosphor-icons/react';
 import { useTreasureHunt } from './hooks/useTreasureHunt';
 import { AnimatedTreasureGrid } from './components/AnimatedTreasureGrid';
+import { formatUsd } from '../../../lib/money';
 
 export function TreasureHuntArena() {
   const {
     isPlaying,
     picksLeft,
     tiles,
-    totalWonWls,
+    totalWonUsd,
     roundCompleted,
     canAfford,
+    costUsd,
     startHunt,
     digTile,
   } = useTreasureHunt();
@@ -26,7 +28,7 @@ export function TreasureHuntArena() {
           TREASURE HUNT MINE
         </h2>
         <p className="text-xs sm:text-sm font-bold text-black/70 mt-1 max-w-xl mx-auto">
-          Pilih dan gali 3 dari 9 petak tanah misterius untuk menemukan pundi World Lock dan Diamond Lock tersembunyi!
+          Pilih dan gali 3 dari 9 petak tanah misterius untuk menemukan pundi saldo dan Gems tersembunyi!
         </p>
       </div>
 
@@ -38,7 +40,7 @@ export function TreasureHuntArena() {
             Sisa Cangkulan: <span className="font-lucky text-base text-red-700">{picksLeft} Kali</span>
           </div>
           <div className="text-xs font-bold text-emerald-800">
-            Hasil Didapat: <span className="font-lucky text-base">+{totalWonWls} WL</span>
+            Hasil Didapat: <span className="font-lucky text-base">+{formatUsd(totalWonUsd)}</span>
           </div>
         </div>
 
@@ -53,7 +55,7 @@ export function TreasureHuntArena() {
         {roundCompleted && (
           <div className="mt-3 px-6 py-2 rounded-full bg-emerald-500 text-white font-bold text-sm flex items-center gap-2 shadow-md">
             <Trophy size={18} weight="fill" className="text-amber-300" />
-            <span>PENGGALIAN SELESAI! Total Hadiah: +{totalWonWls} World Lock</span>
+            <span>PENGGALIAN SELESAI! Total Hadiah: +{formatUsd(totalWonUsd)}</span>
           </div>
         )}
 
@@ -69,16 +71,16 @@ export function TreasureHuntArena() {
               }`}
             >
               {!canAfford
-                ? 'SALDO KURANG (BIAYA 4 WL)'
+                ? `SALDO KURANG (BIAYA ${formatUsd(costUsd)})`
                 : roundCompleted
-                ? 'GALI LAGI (BIAYA 4 WL)'
-                : 'MULAI PENGGALIAN (BIAYA 4 WL)'}
+                ? `GALI LAGI (BIAYA ${formatUsd(costUsd)})`
+                : `MULAI PENGGALIAN (BIAYA ${formatUsd(costUsd)})`}
             </button>
           )}
 
           <div className="flex items-center justify-center gap-2 text-xs font-bold text-black/60">
             <ShieldCheck size={16} className="text-emerald-600" />
-            <span>3 Cangkulan per Ronde • Diamond Lock Pot Tersembunyi</span>
+            <span>3 Cangkulan per Ronde • Peti Saldo Tersembunyi</span>
           </div>
         </div>
       </div>

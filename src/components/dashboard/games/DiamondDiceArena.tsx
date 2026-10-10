@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { DiceSix, Trophy, ShieldCheck, ArrowCounterClockwise } from '@phosphor-icons/react';
 import { useDiceGame, BET_AMOUNTS } from './hooks/useDiceGame';
 import { AnimatedDiceVisual } from './components/AnimatedDiceVisual';
+import { formatUsd } from '../../../lib/money';
 
 export function DiamondDiceArena() {
   const {
@@ -31,7 +32,7 @@ export function DiamondDiceArena() {
           HIGH ROLLER DIAMOND DICE
         </h2>
         <p className="text-xs sm:text-sm font-bold text-black/70 mt-1 max-w-xl mx-auto">
-          Tentukan target angka, pasang taruhan World Lock, dan lempar dadu untuk melipatgandakan kemenanganmu hingga 15x!
+          Tentukan target angka, pasang taruhan saldo, dan lempar dadu untuk melipatgandakan kemenanganmu hingga 15x!
         </p>
       </div>
 
@@ -59,7 +60,7 @@ export function DiamondDiceArena() {
               <>
                 <Trophy size={16} weight="fill" className="text-amber-300" />
                 <span>
-                  MENANG JACKPOT! +{lastOutcome.payoutWls} World Lock ({multiplier}x Payout)
+                  MENANG JACKPOT! +{formatUsd(lastOutcome.payoutUsd)} ({multiplier}x Payout)
                 </span>
               </>
             ) : (
@@ -121,7 +122,7 @@ export function DiamondDiceArena() {
         {/* pilihan jumlah taruhan */}
         <div className="w-full max-w-lg mt-5">
           <label className="block text-xs font-bold text-black/70 mb-2 text-center uppercase tracking-wider">
-            Jumlah Taruhan (World Lock):
+            Jumlah Taruhan (USD):
           </label>
           <div className="grid grid-cols-6 gap-2">
             {BET_AMOUNTS.map((amt) => {
@@ -138,7 +139,7 @@ export function DiamondDiceArena() {
                       : 'bg-white hover:bg-sky-50 text-black border-sky-200'
                   }`}
                 >
-                  {amt === 100 ? '1 DL' : `${amt} WL`}
+                  {formatUsd(amt)}
                 </button>
               );
             })}
@@ -158,8 +159,8 @@ export function DiamondDiceArena() {
             {isRolling
               ? 'MEMUTAR DADU...'
               : !canAfford
-              ? `SALDO KURANG (${selectedBet} WL)`
-              : `LEMPAR DADU (${selectedBet} WL • MENANG ${Math.floor(selectedBet * multiplier)} WL)`}
+              ? `SALDO KURANG (${formatUsd(selectedBet)})`
+              : `LEMPAR DADU (${formatUsd(selectedBet)} • MENANG ${formatUsd(selectedBet * multiplier)})`}
           </button>
 
           <div className="flex items-center justify-center gap-2 text-xs font-bold text-black/60">
@@ -188,7 +189,7 @@ export function DiamondDiceArena() {
               >
                 <span>Angka: {h.roll}</span>
                 <span>•</span>
-                <span>{h.won ? `+${h.payoutWls} WL` : `-${h.betWls} WL`}</span>
+                <span>{h.won ? `+${formatUsd(h.payoutUsd)}` : `-${formatUsd(h.betUsd)}`}</span>
               </div>
             ))}
           </div>

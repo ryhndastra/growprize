@@ -11,7 +11,7 @@ export const GAME_CATALOG: GameDefinition[] = [
     glyphKey: 'gacha',
     title: "It's Rainin' Prizes",
     hint: 'Peti roulette gacha item langka',
-    cost: { wls: 10, dls: 0 },
+    cost: { usd: 0.15 },
   },
   {
     id: 'mystery_box',
@@ -19,7 +19,7 @@ export const GAME_CATALOG: GameDefinition[] = [
     glyphKey: 'mystery',
     title: 'Super Mystery Box',
     hint: 'Buka peti rahasia bertingkat wooden, golden, dan obsidian',
-    cost: { wls: 5, dls: 0 },
+    cost: { usd: 0.15 },
   },
   {
     id: 'diamond_dice',
@@ -27,7 +27,7 @@ export const GAME_CATALOG: GameDefinition[] = [
     glyphKey: 'gamepad',
     title: 'Diamond Dice',
     hint: 'Pasang taruhan dadu 1-100 dengan target over, under, atau seven',
-    cost: { wls: 1, dls: 0 },
+    cost: { usd: 0.1 },
   },
   {
     id: 'gem_rain',
@@ -35,7 +35,7 @@ export const GAME_CATALOG: GameDefinition[] = [
     glyphKey: 'flame',
     title: 'Gem Rain Arena',
     hint: 'Tangkap hujan permata real-time dalam hitungan detik',
-    cost: { wls: 2, dls: 0 },
+    cost: { usd: 0.2 },
   },
   {
     id: 'lucky_wheel',
@@ -43,7 +43,7 @@ export const GAME_CATALOG: GameDefinition[] = [
     glyphKey: 'wheel',
     title: 'Lucky Wheel',
     hint: 'Putar roda hadiah berlapis untuk jackpot lock dan gems',
-    cost: { wls: 3, dls: 0 },
+    cost: { usd: 0.3 },
   },
   {
     id: 'treasure_hunt',
@@ -51,7 +51,7 @@ export const GAME_CATALOG: GameDefinition[] = [
     glyphKey: 'scratch',
     title: 'Treasure Hunt',
     hint: 'Gali lima petak dan temukan harta karun tersembunyi',
-    cost: { wls: 4, dls: 0 },
+    cost: { usd: 0.4 },
   },
 ];
 

@@ -13,6 +13,8 @@ import { ArrowLeftGlyph, SearchGlyph } from '../glyphs';
 import { REEL_TOTAL_CARDS, WINNER_INDEX } from './reelGeometry';
 import { useGachaCases } from './useGachaCases';
 import { ApiError, rollGacha, type ApiCaseItem } from '../../../lib/api';
+import { normalizeWorthUsd } from '../../../lib/money';
+import { formatUsd } from '../../../lib/money';
 
 // backend membatasi satu roll per 1.5 detik per akun. untuk spin multi kita beri
 // jeda aman agar tidak di-429, dan retry sekali bila tetap kena.
@@ -45,7 +47,6 @@ function pickRandom<T>(list: T[]): T | null {
 
 // item server dipetakan ke bentuk katalog fe supaya reel dan modal bisa menampilkannya.
 function toReelItem(item: ApiCaseItem, fallback: GachaItem): GachaItem {
-  const worth = Number(item.worth);
   return {
     id: item.id,
     itemId: Number(item.itemId) || undefined,
@@ -53,7 +54,7 @@ function toReelItem(item: ApiCaseItem, fallback: GachaItem): GachaItem {
     category: fallback.category,
     rarity: fallback.rarity,
     dropRatePercent: 0,
-    valueInDls: Number.isFinite(worth) ? worth / 100 : 0,
+    valueInUsd: normalizeWorthUsd(item.worth),
     icon: fallback.icon,
     description: fallback.description,
     glowColor: item.color || fallback.glowColor,
@@ -265,7 +266,7 @@ export function GachaArena() {
             IT&apos;S RAININ&apos; PRIZES
           </h2>
           <p className="text-xs sm:text-base font-bold text-black/80 mt-2 leading-relaxed">
-            It&apos;s Rainin&apos; Prizes adalah mesin gacha paling populer kami. Semua item langka Growtopia seperti Rayman&apos;s Fist, Magplant 5000, dan ratusan Diamond Lock siap kamu bawa pulang!
+            It&apos;s Rainin&apos; Prizes adalah mesin gacha paling populer kami. Semua item langka Growtopia seperti Rayman&apos;s Fist, Magplant 5000, dan hadiah saldo dolar siap kamu bawa pulang!
           </p>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
@@ -283,7 +284,7 @@ export function GachaArena() {
 
           {isGuest && (
             <div className="mt-3 inline-flex items-center gap-2 rounded-[6px] bg-[#d9f8ff] px-4 py-2 text-xs font-bold text-black border border-sky-300">
-              <img src="/xsolla/items/world_lock.png" alt="" className="w-4 h-4 object-contain shrink-0" />
+              <img src="/xsolla/items/growtoken.png" alt="" className="w-4 h-4 object-contain shrink-0" />
               <span>
                 Kamu melihat sebagai Guest.{' '}
                 <button
@@ -359,11 +360,7 @@ export function GachaArena() {
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <RarityChip rarity={item.rarity} withRate />
                     <div className="flex items-center gap-1 font-bold text-sm text-black">
-                      <span>
-                        {item.valueInDls >= 1
-                          ? `${item.valueInDls} DL`
-                          : `${Math.round(item.valueInDls * 100)} WL`}
-                      </span>
+                      <span>{formatUsd(item.valueInUsd)}</span>
                     </div>
                   </div>
 

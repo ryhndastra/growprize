@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { Sparkle, Trophy, ShieldCheck, ArrowCounterClockwise } from '@phosphor-icons/react';
 import { useLuckyWheel } from './hooks/useLuckyWheel';
 import { AnimatedWheelVisual } from './components/AnimatedWheelVisual';
+import { formatUsd } from '../../../lib/money';
 
 export function LuckyWheelArena() {
   const {
@@ -10,7 +11,7 @@ export function LuckyWheelArena() {
     lastWin,
     history,
     canAfford,
-    costWls,
+    costUsd,
     spinWheel,
   } = useLuckyWheel();
 
@@ -26,7 +27,7 @@ export function LuckyWheelArena() {
           LUCKY WHEEL OF LOCKS
         </h2>
         <p className="text-xs sm:text-sm font-bold text-black/70 mt-1 max-w-xl mx-auto">
-          Putar roda keberuntungan berlapis untuk memenangkan ribuan Gems, World Lock, Diamond Lock, atau Sayap Iblis legendaris!
+          Putar roda keberuntungan berlapis untuk memenangkan hadiah saldo dolar, Gems, atau Sayap Iblis legendaris!
         </p>
       </div>
 
@@ -59,8 +60,8 @@ export function LuckyWheelArena() {
             {isSpinning
               ? 'RODA SEDANG BERPUTAR...'
               : !canAfford
-              ? `SALDO KURANG (${costWls} WL)`
-              : `PUTAR RODA SEKARANG (${costWls} WL)`}
+              ? `SALDO KURANG (${formatUsd(costUsd)})`
+              : `PUTAR RODA SEKARANG (${formatUsd(costUsd)})`}
           </button>
 
           <div className="flex items-center justify-center gap-2 text-xs font-bold text-black/60">

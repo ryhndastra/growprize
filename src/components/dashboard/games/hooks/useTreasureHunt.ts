@@ -1,38 +1,41 @@
 import { useState, useCallback } from 'react';
 import { useDashboard } from '../../DashboardContext';
+import { roundUsd } from '../../../../lib/money';
+
+// biaya ronde treasure hunt dalam usd, disamakan dengan katalog game.
+const TREASURE_COST_USD = 0.4;
 
 export interface TreasureTile {
   id: number;
   revealed: boolean;
   type: 'huge' | 'medium' | 'small' | 'zonk';
   name: string;
-  wls: number;
+  usd: number;
   gems?: number;
 }
 
 export function useTreasureHunt() {
-  const { balance, spendWls, addLocks } = useDashboard();
+  const { balance, spendUsd, addUsd } = useDashboard();
   const [isPlaying, setIsPlaying] = useState(false);
   const [picksLeft, setPicksLeft] = useState(3);
   const [tiles, setTiles] = useState<TreasureTile[]>([]);
-  const [totalWonWls, setTotalWonWls] = useState(0);
+  const [totalWonUsd, setTotalWonUsd] = useState(0);
   const [roundCompleted, setRoundCompleted] = useState(false);
 
-  const costWls = 4;
-  const totalPlayerWls = balance.wls + balance.dls * 100 + balance.bgls * 10000;
-  const canAfford = totalPlayerWls >= costWls;
+  const costUsd = TREASURE_COST_USD;
+  const canAfford = balance.usd >= costUsd;
 
   const generateTiles = (): TreasureTile[] => {
     const pool: Array<Omit<TreasureTile, 'id' | 'revealed'>> = [
-      { type: 'huge', name: 'Diamond Lock Pot!', wls: 100, gems: 0 },
-      { type: 'medium', name: 'Pundi Gem Berkilau', wls: 20, gems: 25000 },
-      { type: 'medium', name: 'Tumpukan 15 WL', wls: 15, gems: 0 },
-      { type: 'small', name: 'Kantung 8 WL', wls: 8, gems: 0 },
-      { type: 'small', name: 'Kantung 6 WL', wls: 6, gems: 0 },
-      { type: 'small', name: 'Kantung 5 WL', wls: 5, gems: 0 },
-      { type: 'zonk', name: 'Batu Kosong', wls: 0, gems: 0 },
-      { type: 'zonk', name: 'Batu Bekas Galian', wls: 0, gems: 0 },
-      { type: 'zonk', name: 'Fosil Kuno', wls: 0, gems: 0 },
+      { type: 'huge', name: 'Peti Saldo Besar!', usd: 1, gems: 0 },
+      { type: 'medium', name: 'Pundi Gem Berkilau', usd: 0.2, gems: 25000 },
+      { type: 'medium', name: 'Tumpukan Koin Saldo', usd: 0.15, gems: 0 },
+      { type: 'small', name: 'Kantung Koin Saldo', usd: 0.08, gems: 0 },
+      { type: 'small', name: 'Kantung Koin Saldo', usd: 0.06, gems: 0 },
+      { type: 'small', name: 'Kantung Koin Saldo', usd: 0.05, gems: 0 },
+      { type: 'zonk', name: 'Batu Kosong', usd: 0, gems: 0 },
+      { type: 'zonk', name: 'Batu Bekas Galian', usd: 0, gems: 0 },
+      { type: 'zonk', name: 'Fosil Kuno', usd: 0, gems: 0 },
     ];
 
     // acak urutan ubin
@@ -48,56 +51,49 @@ export function useTreasureHunt() {
   const startHunt = useCallback(() => {
     if (isPlaying || !canAfford) return;
 
-    const ok = spendWls(costWls);
+    const ok = spendUsd(costUsd);
     if (!ok) return;
 
     setIsPlaying(true);
     setPicksLeft(3);
-    setTotalWonWls(0);
+    setTotalWonUsd(0);
     setRoundCompleted(false);
     setTiles(generateTiles());
-  }, [isPlaying, canAfford, costWls, spendWls]);
+  }, [isPlaying, canAfford, costUsd, spendUsd]);
 
   const digTile = useCallback(
     (tileId: number) => {
       if (!isPlaying || picksLeft <= 0 || roundCompleted) return;
 
-      setTiles((prev) => {
-        const next = [...prev];
-        const target = next.find((t) => t.id === tileId);
-        if (!target || target.revealed) return prev;
+      const target = tiles.find((t) => t.id === tileId);
+      if (!target || target.revealed) return;
 
-        target.revealed = true;
+      // efek samping saldo dijalankan di luar updater setTiles agar updater tetap
+      // murni dan dua tile cepat tidak saling menimpa penambahan saldo.
+      if (target.usd > 0) {
+        addUsd(target.usd);
+        setTotalWonUsd((u) => roundUsd(u + target.usd));
+      }
 
-        if (target.wls > 0) {
-          addLocks({ wls: target.wls });
-          setTotalWonWls((w) => w + target.wls);
-        }
-        if (target.gems && target.gems > 0) {
-          addLocks({ gems: target.gems });
-        }
+      const remainingPicks = picksLeft - 1;
+      setTiles((prev) => prev.map((t) => (t.id === tileId ? { ...t, revealed: true } : t)));
+      setPicksLeft(remainingPicks);
 
-        const remainingPicks = picksLeft - 1;
-        setPicksLeft(remainingPicks);
-
-        if (remainingPicks <= 0) {
-          setRoundCompleted(true);
-          setIsPlaying(false);
-        }
-
-        return next;
-      });
+      if (remainingPicks <= 0) {
+        setRoundCompleted(true);
+        setIsPlaying(false);
+      }
     },
-    [isPlaying, picksLeft, roundCompleted, addLocks]
+    [isPlaying, picksLeft, roundCompleted, tiles, addUsd]
   );
 
   return {
     isPlaying,
     picksLeft,
     tiles,
-    totalWonWls,
+    totalWonUsd,
     roundCompleted,
-    costWls,
+    costUsd,
     canAfford,
     startHunt,
     digTile,

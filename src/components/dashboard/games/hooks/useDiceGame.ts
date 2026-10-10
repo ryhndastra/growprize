@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDashboard } from '../../DashboardContext';
+import { roundUsd } from '../../../../lib/money';
 
 export type BetTarget = 'over' | 'under' | 'seven';
 
@@ -7,18 +8,20 @@ export interface RollRecord {
   roll: number;
   die1: number;
   die2: number;
-  betWls: number;
+  betUsd: number;
   target: BetTarget;
   won: boolean;
-  payoutWls: number;
+  payoutUsd: number;
   timestamp: string;
 }
 
-export const BET_AMOUNTS = [1, 5, 10, 25, 50, 100];
+// taruhan dalam usd, diselaraskan dengan harga case backend (0.15 s/d 1.5 usd)
+// supaya ekonomi minigame tidak lepas dari skala katalog nyata.
+export const BET_AMOUNTS = [0.1, 0.25, 0.5, 1, 2.5, 5];
 
 export function useDiceGame() {
-  const { balance, spendWls, addLocks } = useDashboard();
-  const [selectedBet, setSelectedBet] = useState<number>(5);
+  const { balance, spendUsd, addUsd } = useDashboard();
+  const [selectedBet, setSelectedBet] = useState<number>(0.5);
   const [target, setTarget] = useState<BetTarget>('over');
   const [isRolling, setIsRolling] = useState<boolean>(false);
   const [diceValues, setDiceValues] = useState<[number, number]>([4, 3]);
@@ -37,16 +40,15 @@ export function useDiceGame() {
     };
   }, []);
 
-  const totalPlayerWls = balance.wls + balance.dls * 100 + balance.bgls * 10000;
-  const canAfford = totalPlayerWls >= selectedBet;
+  const canAfford = balance.usd >= selectedBet;
   const multiplier = target === 'seven' ? 15.0 : 1.95;
 
   const rollDice = useCallback(() => {
     if (isRolling || !canAfford) return;
 
-    // potong nilai taruhan lintas denominasi dalam satu transaksi atomik;
-    // bila saldo tidak cukup, tidak ada saldo yang berubah sama sekali.
-    const deducted = spendWls(selectedBet);
+    // potong taruhan usd dalam satu transaksi; bila saldo tidak cukup, tidak ada
+    // saldo yang berubah sama sekali.
+    const deducted = spendUsd(selectedBet);
     if (!deducted) return;
 
     setIsRolling(true);
@@ -77,19 +79,20 @@ export function useDiceGame() {
         if (target === 'under' && finalScore < 50) won = true;
         if (target === 'seven' && finalScore === 77) won = true;
 
-        const payout = won ? Math.floor(selectedBet * multiplier) : 0;
+        // payout usd dibulatkan ke sen utuh agar aritmetika float tidak melenceng.
+        const payout = won ? roundUsd(selectedBet * multiplier) : 0;
         if (won && payout > 0) {
-          addLocks({ wls: payout });
+          addUsd(payout);
         }
 
         const record: RollRecord = {
           roll: finalScore,
           die1: finalD1,
           die2: finalD2,
-          betWls: selectedBet,
+          betUsd: selectedBet,
           target,
           won,
-          payoutWls: payout,
+          payoutUsd: payout,
           timestamp: 'Baru saja',
         };
 
@@ -99,7 +102,7 @@ export function useDiceGame() {
       }
     }, 80);
     rollTimerRef.current = interval;
-  }, [isRolling, canAfford, selectedBet, spendWls, addLocks, target, multiplier]);
+  }, [isRolling, canAfford, selectedBet, spendUsd, addUsd, target, multiplier]);
 
   return {
     selectedBet,

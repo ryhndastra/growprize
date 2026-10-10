@@ -2,56 +2,29 @@ import { motion } from 'motion/react';
 import { WalletBalance } from '../../types/dashboard';
 import { PlusGlyph } from './glyphs';
 import { useAnimatedNumber } from './useAnimatedNumber';
-import { lockIconUrl, type LockIconKind } from '../../lib/growIcons';
+import { formatUsd, normalizeUsd } from '../../lib/money';
 
 interface BalancePillProps {
-  balance: WalletBalance;
+  balance: WalletBalance | null | undefined;
   onOpenTutorial: () => void;
 }
 
-// konversi ke satuan WL sebagai dasar perhitungan total saldo.
-export function totalInWls(balance: WalletBalance | null | undefined): number {
-  if (!balance) return 0;
-  const wls = Number.isFinite(balance.wls) ? balance.wls : 0;
-  const dls = Number.isFinite(balance.dls) ? balance.dls : 0;
-  const bgls = Number.isFinite(balance.bgls) ? balance.bgls : 0;
-  return wls + dls * 100 + bgls * 10000;
-}
-
-// saldo ditampilkan dalam unit terbesar yang masih masuk akal:
-// bgl bila >= 10000 wl, dl bila >= 100 wl, selain itu wl.
-export function formatBalance(totalWls: number): { value: string; unit: string; kind: LockIconKind } {
-  if (!Number.isFinite(totalWls) || totalWls <= 0) {
-    return { value: '0', unit: 'WL', kind: 'wl' };
-  }
-  if (totalWls >= 10000) {
-    return { value: (totalWls / 10000).toFixed(2), unit: 'BGL', kind: 'bgl' };
-  }
-  if (totalWls >= 100) {
-    return { value: (totalWls / 100).toFixed(2), unit: 'DL', kind: 'dl' };
-  }
-  return { value: totalWls.toFixed(2), unit: 'WL', kind: 'wl' };
-}
-
-// satu-satunya penanda saldo di navbar. ikon lock diambil dinamis dari endpoint
-// grow-item-icon sesuai unit saldo yang sedang ditampilkan, plus tombol isi saldo.
+// satu-satunya penanda saldo di navbar. saldo sudah dalam usd, jadi ornamennya
+// koin growtoken (bukan lock wl/dl/bgl) plus tombol isi saldo.
 export function BalancePill({ balance, onOpenTutorial }: BalancePillProps) {
-  const total = totalInWls(balance);
-  const { unit, kind } = formatBalance(total);
-  const valueRef = useAnimatedNumber(total, (next) => formatBalance(next).value);
-  const iconSrc = lockIconUrl(kind, 128);
+  const total = normalizeUsd(balance?.usd);
+  const valueRef = useAnimatedNumber(total, formatUsd);
 
   return (
     <div className="flex min-h-11 items-center gap-1.5 rounded-[8px] bg-white/95 px-2 sm:px-3 text-black shadow-[2px_3px_0_#000000] border-2 border-[#03afef]">
       <img
-        src={iconSrc}
+        src="/xsolla/items/growtoken.png"
         alt=""
         className="h-6 w-6 object-contain shrink-0"
         draggable={false}
       />
       <span className="font-mono-num text-xs sm:text-sm font-bold text-black tabular-nums inline-flex items-baseline gap-1">
-        <span ref={valueRef}>{formatBalance(total).value}</span>
-        <span className="text-[10px] font-bold text-sky-900">{unit}</span>
+        <span ref={valueRef}>{formatUsd(total)}</span>
       </span>
       <motion.button
         type="button"

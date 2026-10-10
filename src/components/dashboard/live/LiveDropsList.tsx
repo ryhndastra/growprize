@@ -1,21 +1,11 @@
 import { useState } from 'react';
 import { RarityTier } from '../../../types/dashboard';
-import {
-  DiamondLockIcon,
-  BlueGemLockIcon,
-} from '../../GrowtopiaAssets';
 import { ItemSprite } from '../GachaSprites';
 import { RarityChip } from '../gacha/RarityTierPills';
 import { useDashboard } from '../DashboardContext';
+import { formatUsd } from '../../../lib/money';
 
 const FILTERS: Array<'all' | RarityTier> = ['all', 'mythic', 'legendary', 'epic'];
-
-function formatDropValue(value: number): { asBgl: boolean; asDl: boolean; text: string } {
-  if (!Number.isFinite(value) || value <= 0) return { asBgl: false, asDl: false, text: '0 WL' };
-  if (value >= 100) return { asBgl: true, asDl: false, text: `${(value / 100).toFixed(1)} BGL` };
-  if (value >= 1) return { asBgl: false, asDl: true, text: `${value} DL` };
-  return { asBgl: false, asDl: false, text: `${Math.round(value * 100)} WL` };
-}
 
 // papan pemenang jackpot langsung bergaya kartu putih & biru es xsolla.growtopiagame.com.
 export function LiveDropsList() {
@@ -34,7 +24,7 @@ export function LiveDropsList() {
         <StatCard
           imgSrc="/xsolla/items/it_s_rainin_gems.png"
           label="Jackpot Teratas"
-          value="Rayman's Fist (185 DL)"
+          value="Rayman's Fist ($35.00)"
         />
         <StatCard
           imgSrc="/xsolla/items/growtoken.png"
@@ -44,7 +34,7 @@ export function LiveDropsList() {
         <StatCard
           imgSrc="/xsolla/items/gems.png"
           label="Hadiah Server"
-          value="840+ BGL Dibagikan"
+          value="$8,400 Dibagikan"
         />
       </div>
 
@@ -91,7 +81,7 @@ export function LiveDropsList() {
           ) : (
             filteredDrops.map((drop) => {
               const isHighTier = drop.item.rarity === 'mythic' || drop.item.rarity === 'legendary';
-              const value = formatDropValue(drop.item.valueInDls);
+              const value = formatUsd(drop.item.valueInUsd);
               return (
                 <div
                   key={drop.id}
@@ -120,14 +110,8 @@ export function LiveDropsList() {
                   <div className="flex items-center gap-3 shrink-0 text-right">
                     <div>
                       <div className="flex items-center justify-end gap-1.5 text-xs sm:text-sm font-bold text-[#15803d] tabular-nums">
-                        {value.asBgl ? (
-                          <BlueGemLockIcon className="w-4 h-4" />
-                        ) : value.asDl ? (
-                          <DiamondLockIcon className="w-4 h-4" />
-                        ) : (
-                          <img src="/xsolla/items/world_lock.png" alt="" className="w-4 h-4 object-contain" />
-                        )}
-                        <span>{value.text}</span>
+                        <img src="/xsolla/items/growtoken.png" alt="" className="w-4 h-4 object-contain" />
+                        <span>{value}</span>
                       </div>
                       <span className="text-[11px] text-black/55 font-bold block">{drop.timestamp}</span>
                     </div>

@@ -24,7 +24,7 @@ const STEPS: TutorialStep[] = [
   },
   {
     title: 'Tunggu saldo masuk',
-    body: 'Setelah pembayaran dikonfirmasi admin, saldo World Lock, Diamond Lock, dan Blue Gem Lock akan masuk ke akunmu. Nilai Balance di navbar akan ikut berubah setelah server memperbarui data.',
+    body: 'Setelah pembayaran dikonfirmasi admin, saldo dolar (USD) akan masuk ke akunmu. Nilai Balance di navbar akan ikut berubah setelah server memperbarui data.',
   },
   {
     title: 'Pakai saldo untuk main',
@@ -89,7 +89,7 @@ export function TopUpTutorial({ onBack }: TopUpTutorialProps) {
           </li>
           <li className="flex gap-2.5">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#43b427]" aria-hidden="true" />
-            <span>Tidak ada biaya konversi antar lock. Rate resmi tetap 100 WL sama dengan 1 DL dan 100 DL sama dengan 1 BGL.</span>
+            <span>Saldo tersimpan dalam dolar (USD) dan langsung dipakai di semua game tanpa konversi.</span>
           </li>
           <li className="flex gap-2.5">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#43b427]" aria-hidden="true" />

@@ -12,11 +12,10 @@ export type DashboardTab =
 
 export type RarityTier = 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
+// saldo akun disimpan backend dalam usd murni. satu field saja agar tidak ada
+// lagi konversi lintas denominasi yang bikin angka saldo melenceng.
 export interface WalletBalance {
-  wls: number;
-  dls: number;
-  bgls: number;
-  gems: number;
+  usd: number;
 }
 
 export interface PlayerProfile {
@@ -35,7 +34,7 @@ export interface GachaItem {
   category: 'wings' | 'hand' | 'hat' | 'device' | 'consumable' | 'artifact';
   rarity: RarityTier;
   dropRatePercent: number;
-  valueInDls: number;
+  valueInUsd: number;
   /** Key referencing a vector sprite in GachaSprites.tsx (no emoji). */
   icon: GachaSpriteKey;
   /** Growtopia numeric item id for the remote icon endpoint. */
@@ -91,8 +90,7 @@ export type GameId =
   | 'treasure_hunt';
 
 export interface GameCost {
-  wls: number;
-  dls: number;
+  usd: number;
 }
 
 export interface GameDefinition {

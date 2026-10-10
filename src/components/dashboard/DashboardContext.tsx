@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -20,6 +21,7 @@ import {
 } from '../../data/gachaItems';
 import { useAuth } from '../../lib/auth';
 import { fetchBackpack, type ApiBackpackItem } from '../../lib/api';
+import { normalizeUsd, roundUsd, normalizeWorthUsd } from '../../lib/money';
 import { normalizeRarity } from './gacha/normalizeRarity';
 
 interface DashboardState {
@@ -46,17 +48,16 @@ interface DashboardActions {
    * (dadu, gem rain, lucky wheel, treasure, mystery). nilainya mengambang di atas
    * saldo server dan sengaja direset saat refresh. gacha tidak memakai jalur ini.
    */
-  spendWls: (amountWls: number) => boolean;
-  addLocks: (delta: Partial<WalletBalance>) => void;
+  spendUsd: (amountUsd: number) => boolean;
+  addUsd: (deltaUsd: number) => void;
 }
 
 const DashboardContext = createContext<(DashboardState & DashboardActions) | null>(null);
 
-// backend menyimpan satu angka saldo. fe memperlakukannya sebagai nilai world lock
-// utama, lalu menurunkan dl dan bgl hanya untuk tata letak tampilan saldo lama.
+// backend menyimpan satu angka saldo dalam usd. fe menerimanya apa adanya tanpa
+// konversi denominasi; nilai tidak valid jadi nol dan saldo tidak pernah negatif.
 function balanceFromBackend(raw: number | null | undefined): WalletBalance {
-  const safe = typeof raw === 'number' && Number.isFinite(raw) && raw > 0 ? raw : 0;
-  return { wls: safe, dls: 0, bgls: 0, gems: 0 };
+  return { usd: normalizeUsd(raw) };
 }
 
 // item backpack dari server dipetakan ke bentuk katalog fe tanpa mengarang data.
@@ -69,7 +70,7 @@ function toGachaItem(row: ApiBackpackItem): GachaItem {
     category: 'consumable',
     rarity: normalizeRarity(row.rarity),
     dropRatePercent: 0,
-    valueInDls: Number.isFinite(Number(row.worth)) ? Number(row.worth) / 100 : 0,
+    valueInUsd: normalizeWorthUsd(row.worth),
     icon: 'gemSack',
     description: `Tersimpan di backpack kamu sebanyak ${Number(row.count) || 0}.`,
     glowColor: typeof row.color === 'string' && row.color ? row.color : '#4b69ff',
@@ -95,51 +96,49 @@ export function DashboardProvider({
   const growId = user?.grow_id ?? 'Guest';
   const world = 'GROWPRIZE';
 
-  // saldo hanya berasal dari server. tidak ada lagi state lokal yang bisa membuat
-  // angka palsu muncul saat refresh.
+  // saldo hanya berasal dari server. tidak ada cache lokal yang bisa menutupi
+  // angka server dan membuat saldo terlihat macet atau berbeda dari akun nyata.
   const serverBalance = useMemo(() => balanceFromBackend(user?.balance), [user?.balance]);
 
-  // overlay ledger lokal khusus minigame demo (bukan gacha). direset saat identitas
-  // berubah atau data server diperbarui, supaya tidak menutupi angka server selamanya.
+  // overlay ledger lokal khusus minigame demo (bukan gacha). ref jadi sumber
+  // kebenaran untuk pembacaan sinkron, state hanya cermin untuk render. pola ini
+  // menghindari lost update (dua panggilan dalam satu batch) sekaligus false-reject
+  // (membaca hasil yang baru di-set di dalam updater).
+  const ledgerRef = useRef<WalletBalance | null>(null);
   const [ledgerOverride, setLedgerOverride] = useState<WalletBalance | null>(null);
 
   useEffect(() => {
+    ledgerRef.current = null;
     setLedgerOverride(null);
   }, [user?.uid, user?.balance]);
 
   const balance = ledgerOverride ?? serverBalance;
 
-  // belanja nilai dalam satuan wl dengan memotong lintas denominasi secara atomik.
-  const spendWls = useCallback(
-    (amountWls: number) => {
-      if (!Number.isFinite(amountWls) || amountWls <= 0) return false;
-      const base = ledgerOverride ?? serverBalance;
-      const totalWls = base.wls + base.dls * 100 + base.bgls * 10000;
-      if (totalWls < amountWls) return false;
-
-      const affordableWls = totalWls - amountWls;
-      const bgls = Math.floor(affordableWls / 10000);
-      const afterBgls = affordableWls - bgls * 10000;
-      const dls = Math.floor(afterBgls / 100);
-      const wls = afterBgls - dls * 100;
-
-      setLedgerOverride({ wls, dls, bgls, gems: base.gems });
+  // belanja usd dengan guard anti-nan: potong hanya bila jumlahnya valid dan cukup.
+  // keputusan diambil dari ref sehingga nilai kembalian selalu akurat, tanpa
+  // bergantung pada kapan react menjalankan updater.
+  const spendUsd = useCallback(
+    (amountUsd: number) => {
+      if (!Number.isFinite(amountUsd) || amountUsd <= 0) return false;
+      const base = ledgerRef.current ?? serverBalance;
+      if (base.usd < amountUsd) return false;
+      const next = { usd: roundUsd(base.usd - amountUsd) };
+      ledgerRef.current = next;
+      setLedgerOverride(next);
       return true;
     },
-    [ledgerOverride, serverBalance]
+    [serverBalance]
   );
 
-  const addLocks = useCallback(
-    (delta: Partial<WalletBalance>) => {
-      const base = ledgerOverride ?? serverBalance;
-      setLedgerOverride({
-        wls: base.wls + (delta.wls ?? 0),
-        dls: base.dls + (delta.dls ?? 0),
-        bgls: base.bgls + (delta.bgls ?? 0),
-        gems: base.gems + (delta.gems ?? 0),
-      });
+  const addUsd = useCallback(
+    (deltaUsd: number) => {
+      if (!Number.isFinite(deltaUsd) || deltaUsd <= 0) return;
+      const base = ledgerRef.current ?? serverBalance;
+      const next = { usd: normalizeUsd(base.usd + deltaUsd) };
+      ledgerRef.current = next;
+      setLedgerOverride(next);
     },
-    [ledgerOverride, serverBalance]
+    [serverBalance]
   );
 
   const inventory = useMemo(() => backpack.map(toGachaItem), [backpack]);
@@ -215,8 +214,8 @@ export function DashboardProvider({
       requireLogin: onRequireLogin,
       setActiveTab,
       refreshBackpack,
-      spendWls,
-      addLocks,
+      spendUsd,
+      addUsd,
     }),
     [
       balance,
@@ -233,8 +232,8 @@ export function DashboardProvider({
       addItemToInventory,
       onRequireLogin,
       refreshBackpack,
-      spendWls,
-      addLocks,
+      spendUsd,
+      addUsd,
     ]
   );
 
