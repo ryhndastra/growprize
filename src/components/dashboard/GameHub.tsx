@@ -5,6 +5,7 @@ import { RarityChip } from './gacha/RarityTierPills';
 import { ItemSprite } from './GachaSprites';
 import { GameInspectModal } from './GameInspectModal';
 import { GameCard, GameCardData } from './hub/GameCard';
+import { formatUsd } from '../../lib/money';
 
 interface GameHubProps {
   onSelectTab: (tab: DashboardTab) => void;
@@ -21,7 +22,7 @@ const ALL_GAMES: GameCardData[] = [
     subtitle: "Peti gacha roulette legendaris berhadiah Rayman's Fist, Magplant 5000, dan Golden Ankh.",
     badge: 'PALING POPULER',
     badgeColor: 'red',
-    costLabel: '10 WL / Spin',
+    costLabel: '$0.15 / Spin',
     imageSrc: '/xsolla/items/it_s_rainin_gems.png',
     tagline: 'Roulette Wheel • Spin 1x/5x/10x',
     inspectable: true,
@@ -29,10 +30,10 @@ const ALL_GAMES: GameCardData[] = [
   {
     id: 'mystery_box',
     title: 'SUPER MYSTERY BOX',
-    subtitle: 'Buka peti kayu, emas, atau obsidian kuno untuk menemukan drop langka & Diamond Lock.',
+    subtitle: 'Buka peti kayu, emas, atau obsidian kuno untuk menemukan drop langka & saldo dolar.',
     badge: '3 TIER PETI',
     badgeColor: 'amber',
-    costLabel: '5 WL - 1 DL',
+    costLabel: '$0.15 - $1.50',
     imageSrc: '/xsolla/items/chest_o_gems.png',
     tagline: 'Wooden, Golden & Obsidian',
   },
@@ -42,37 +43,37 @@ const ALL_GAMES: GameCardData[] = [
     subtitle: 'Lempar dadu keberuntungan 1-100. Pasang taruhan pada Over 50, Under 50, atau Lucky 77.',
     badge: 'FAIR PROVABLY RNG',
     badgeColor: 'sky',
-    costLabel: '1 WL - 1 DL',
+    costLabel: '$0.10 - $5.00',
     imageSrc: '/xsolla/items/world_lock.png',
     tagline: 'Provably Fair • Payout s/d 15x',
   },
   {
     id: 'gem_rain',
     title: 'GEM RAIN ARENA',
-    subtitle: 'Tangkap hujan ribuan Gems dan World Lock yang jatuh dari langit sebelum hilang ke tanah.',
+    subtitle: 'Tangkap hujan ribuan Gems dan koin saldo yang jatuh dari langit sebelum hilang ke tanah.',
     badge: 'ARCADE LIVE',
     badgeColor: 'emerald',
-    costLabel: '2 WL / Ronde',
+    costLabel: '$0.20 / Ronde',
     imageSrc: '/xsolla/items/gem_abundance.png',
     tagline: '20s Catcher • Combo Multiplier',
   },
   {
     id: 'lucky_wheel',
     title: 'LUCKY WHEEL',
-    subtitle: 'Putar roda keberuntungan 8 segmen untuk memenangkan Gems, World Lock, DL, atau Devil Wings.',
+    subtitle: 'Putar roda keberuntungan 8 segmen untuk memenangkan saldo dolar, Gems, atau Devil Wings.',
     badge: 'ROULETTE 8X',
     badgeColor: 'purple',
-    costLabel: '3 WL / Putar',
+    costLabel: '$0.30 / Putar',
     imageSrc: '/xsolla/items/growtoken.png',
     tagline: '8 Segmen • Payout Berjenjang',
   },
   {
     id: 'treasure_hunt',
     title: 'TREASURE HUNT',
-    subtitle: 'Gali 3 petak tanah misterius dari 9 blok untuk menemukan harta karun Diamond Lock.',
+    subtitle: 'Gali 3 petak tanah misterius dari 9 blok untuk menemukan harta karun saldo dolar.',
     badge: 'MINING ARCADE',
     badgeColor: 'amber',
-    costLabel: '4 WL / Ronde',
+    costLabel: '$0.40 / Ronde',
     imageSrc: '/xsolla/items/gem_bounty.png',
     tagline: '9 Petak • 3 Kesempatan Gali',
   },
@@ -140,10 +141,8 @@ export function GameHub({
                 <div className="flex items-center justify-between gap-1 mb-2">
                   <RarityChip rarity={item.rarity} />
                   <div className="flex items-center gap-1 font-bold text-xs text-black">
-                    <img src="/xsolla/items/world_lock.png" alt="" className="w-3.5 h-3.5 object-contain" />
-                    <span>
-                      {item.valueInDls >= 1 ? `${item.valueInDls} DL` : `${Math.round(item.valueInDls * 100)} WL`}
-                    </span>
+                    <img src="/xsolla/items/growtoken.png" alt="" className="w-3.5 h-3.5 object-contain" />
+                    <span>{formatUsd(item.valueInUsd)}</span>
                   </div>
                 </div>
 

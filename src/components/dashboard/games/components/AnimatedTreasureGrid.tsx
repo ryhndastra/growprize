@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { Shovel, Trophy } from '@phosphor-icons/react';
 import { TreasureTile } from '../hooks/useTreasureHunt';
+import { formatUsd } from '../../../../lib/money';
 
 interface AnimatedTreasureGridProps {
   tiles: TreasureTile[];
@@ -34,7 +35,7 @@ export function AnimatedTreasureGrid({ tiles, isPlaying, onDig }: AnimatedTreasu
           whileTap={isPlaying && !tile.revealed ? { scale: 0.95 } : undefined}
           className={`relative flex h-24 sm:h-28 flex-col items-center justify-center rounded-xl p-2 transition-all border-2 select-none cursor-pointer ${
             tile.revealed
-              ? tile.wls > 0
+              ? tile.usd > 0
                 ? 'bg-amber-100 border-amber-400 shadow-inner'
                 : 'bg-neutral-200 border-neutral-400 shadow-inner'
               : 'gt-dirt-band border-[#7a481c] shadow-[2px_4px_0_#000000] hover:brightness-110'
@@ -47,20 +48,20 @@ export function AnimatedTreasureGrid({ tiles, isPlaying, onDig }: AnimatedTreasu
               transition={{ type: 'spring', stiffness: 450, damping: 22 }}
               className="flex flex-col items-center text-center"
             >
-              {tile.wls >= 100 ? (
+              {tile.usd >= 1 ? (
                 <div className="flex flex-col items-center">
                   <Trophy size={28} weight="fill" className="text-amber-500 animate-bounce" />
-                  <span className="font-lucky text-xs text-sky-950 mt-1">1 DL</span>
+                  <span className="font-lucky text-xs text-sky-950 mt-1">{formatUsd(tile.usd)}</span>
                 </div>
-              ) : tile.wls > 0 ? (
+              ) : tile.usd > 0 ? (
                 <div className="flex flex-col items-center">
                   <img
-                    src="/xsolla/items/world_lock.png"
+                    src="/xsolla/items/growtoken.png"
                     alt=""
                     className="h-10 w-10 object-contain drop-shadow"
                     draggable={false}
                   />
-                  <span className="font-lucky text-xs text-amber-900 mt-0.5">+{tile.wls} WL</span>
+                  <span className="font-lucky text-xs text-amber-900 mt-0.5">+{formatUsd(tile.usd)}</span>
                 </div>
               ) : (
                 <div className="flex flex-col items-center opacity-60">

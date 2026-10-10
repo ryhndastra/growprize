@@ -2,21 +2,15 @@ import { useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { GachaItem } from '../../../types/dashboard';
 import { GrowtopiaDialog, GrowtopiaButton } from '../../GrowtopiaAssets';
-import { GrowLockIcon } from '../GrowLockIcon';
 import { GrowItemIcon } from '../GrowItemIcon';
 import { RarityChip } from './RarityTierPills';
+import { formatUsd, roundUsd } from '../../../lib/money';
 
 interface WinRewardModalProps {
   wonItems: GachaItem[];
   isOpen: boolean;
   onClose: () => void;
   onInstantSell?: (items: GachaItem[]) => void;
-}
-
-function formatDlValue(value: number): { asDl: boolean; text: string } {
-  if (!Number.isFinite(value) || value <= 0) return { asDl: false, text: '0 WL' };
-  if (value >= 1) return { asDl: true, text: `${value.toFixed(1)} DL` };
-  return { asDl: false, text: `${Math.round(value * 100)} WL` };
 }
 
 // modal hadiah kemenangan bergaya kartu putih xsolla dengan ceruk item #b5eefa dan tombol hijau #43b427.
@@ -40,11 +34,13 @@ export function WinRewardModal({
 
   if (!isOpen || wonItems.length === 0) return null;
 
-  const totalDlValue = wonItems.reduce(
-    (acc, it) => acc + (Number.isFinite(it.valueInDls) ? it.valueInDls : 0),
-    0
+  const totalUsdValue = roundUsd(
+    wonItems.reduce(
+      (acc, it) => acc + (Number.isFinite(it.valueInUsd) ? it.valueInUsd : 0),
+      0
+    )
   );
-  const totalLabel = formatDlValue(totalDlValue);
+  const totalLabel = formatUsd(totalUsdValue);
   const isMultiItem = wonItems.length > 1;
 
   const handleInstantSellClick = () => {
@@ -84,12 +80,8 @@ export function WinRewardModal({
                 <div className="flex items-center gap-1.5 text-[#15803d]">
                   <span>Estimasi Nilai:</span>
                   <span className="flex items-center gap-1 font-bold tabular-nums">
-                    {totalLabel.asDl ? (
-                      <GrowLockIcon kind="dl" className="w-4 h-4" />
-                    ) : (
-                      <GrowLockIcon kind="wl" className="w-4 h-4" />
-                    )}
-                    {totalLabel.text}
+                    <img src="/xsolla/items/growtoken.png" alt="" className="w-4 h-4 object-contain" />
+                    {totalLabel}
                   </span>
                 </div>
               </div>
@@ -99,7 +91,7 @@ export function WinRewardModal({
               {!isMultiItem ? (
                 (() => {
                   const item = wonItems[0];
-                  const label = formatDlValue(item.valueInDls);
+                  const label = formatUsd(item.valueInUsd);
                   return (
                     <div className="w-full flex flex-col overflow-hidden rounded-[8px]">
                       <div className="gt-inset w-full p-6 flex flex-col items-center text-center rounded-t-[8px] rounded-b-none">
@@ -123,12 +115,8 @@ export function WinRewardModal({
                           Estimasi Nilai:
                         </span>
                         <div className="flex items-center gap-1.5 text-sm sm:text-base font-bold text-black tabular-nums">
-                          {label.asDl ? (
-                            <GrowLockIcon kind="dl" className="w-5 h-5" />
-                          ) : (
-                            <GrowLockIcon kind="wl" className="w-5 h-5" />
-                          )}
-                          <span>{label.text}</span>
+                          <img src="/xsolla/items/growtoken.png" alt="" className="w-5 h-5 object-contain" />
+                          <span>{label}</span>
                         </div>
                       </div>
                     </div>
@@ -137,7 +125,7 @@ export function WinRewardModal({
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {wonItems.map((item, idx) => {
-                    const label = formatDlValue(item.valueInDls);
+                    const label = formatUsd(item.valueInUsd);
                     return (
                       <div
                         key={`${item.id}-${idx}`}
@@ -154,12 +142,8 @@ export function WinRewardModal({
                         </h4>
 
                         <div className="mt-1 flex items-center justify-center gap-1 text-xs font-bold text-[#15803d] tabular-nums">
-                          {label.asDl ? (
-                            <GrowLockIcon kind="dl" className="w-3.5 h-3.5" />
-                          ) : (
-                            <GrowLockIcon kind="wl" className="w-3.5 h-3.5" />
-                          )}
-                          <span>{label.text}</span>
+                          <img src="/xsolla/items/growtoken.png" alt="" className="w-3.5 h-3.5 object-contain" />
+                          <span>{label}</span>
                         </div>
                       </div>
                     );
@@ -177,13 +161,13 @@ export function WinRewardModal({
                 SIMPAN DI TAS
               </GrowtopiaButton>
 
-              {onInstantSell && totalDlValue > 0 && (
+              {onInstantSell && totalUsdValue > 0 && (
                 <GrowtopiaButton
                   variant="cyan"
                   onClick={handleInstantSellClick}
                   className="w-full sm:flex-1 h-12 text-sm sm:text-base"
                 >
-                  JUAL INSTAN ({totalLabel.text})
+                  JUAL INSTAN ({totalLabel})
                 </GrowtopiaButton>
               )}
             </div>

@@ -3,6 +3,7 @@ import { RarityTier, GachaItem } from '../../types/dashboard';
 import { GrowItemIcon } from './GrowItemIcon';
 import { CloseGlyph } from './glyphs';
 import { MagnifyingGlass } from '@phosphor-icons/react';
+import { formatUsd } from '../../lib/money';
 
 interface GameInspectModalProps {
   isOpen: boolean;
@@ -162,10 +163,8 @@ export function GameInspectModal({ isOpen, onClose, items }: GameInspectModalPro
                             {item.description}
                           </p>
                           <div className="mt-1 flex items-center gap-1 text-[11px] font-bold text-[#0284c7]">
-                            <img src="/xsolla/items/world_lock.png" alt="" className="h-3.5 w-3.5 object-contain" />
-                            <span>
-                              {item.valueInDls >= 1 ? `${item.valueInDls} DL` : `${Math.round(item.valueInDls * 100)} WL`}
-                            </span>
+                            <img src="/xsolla/items/growtoken.png" alt="" className="h-3.5 w-3.5 object-contain" />
+                            <span>{formatUsd(item.valueInUsd)}</span>
                           </div>
                         </div>
                       </div>

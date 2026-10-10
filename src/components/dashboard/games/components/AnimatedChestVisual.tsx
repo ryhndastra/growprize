@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Trophy } from '@phosphor-icons/react';
 import { ItemSprite } from '../../GachaSprites';
 import { BoxTier, OpenedReward } from '../hooks/useMysteryBox';
+import { formatUsd } from '../../../../lib/money';
 
 interface AnimatedChestVisualProps {
   selectedTier: BoxTier;
@@ -70,7 +71,7 @@ export function AnimatedChestVisual({
               <motion.img
                 initial={{ y: 10, scale: 0.8 }}
                 animate={{ y: 0, scale: 1 }}
-                src="/xsolla/items/world_lock.png"
+                src="/xsolla/items/growtoken.png"
                 alt=""
                 className="h-16 w-16 object-contain drop-shadow my-1"
                 draggable={false}
@@ -84,7 +85,7 @@ export function AnimatedChestVisual({
               {lastReward.description}
             </p>
             <span className="text-xs font-bold text-emerald-800 mt-2 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 shadow-xs">
-              Estimasi Nilai: ~{lastReward.wlsValue} World Lock
+              Estimasi Nilai: ~{formatUsd(lastReward.usdValue)}
             </span>
           </motion.div>
         ) : (

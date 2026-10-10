@@ -4,6 +4,7 @@ import { GachaItem } from '../../../types/dashboard';
 import { RarityChip } from './RarityTierPills';
 import { GrowItemIcon } from '../GrowItemIcon';
 import { CARD_W, GAP, PITCH } from './reelGeometry';
+import { formatUsd } from '../../../lib/money';
 
 interface ChestRouletteProps {
   isRolling: boolean;
@@ -291,7 +292,7 @@ function ReelCard({
   item: GachaItem;
   highlighted: boolean;
 }) {
-  const valueLabel = valueInDls(item.valueInDls);
+  const valueLabel = formatUsd(item.valueInUsd);
   const accent = RARITY_ACCENT[item.rarity] || RARITY_ACCENT.common;
 
   return (
@@ -330,10 +331,4 @@ function ReelCard({
       <div className={`w-full h-1 rounded-full mt-0.5 ${accent.bar}`} />
     </div>
   );
-}
-
-function valueInDls(value: number): string {
-  if (!Number.isFinite(value) || value < 0) return '0 WL';
-  if (value >= 1) return `${value} DL`;
-  return `${Math.round(value * 100)} WL`;
 }

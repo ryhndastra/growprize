@@ -3,6 +3,7 @@ import { fetchCases, type ApiCase } from '../../../lib/api';
 import { GACHA_ITEMS } from '../../../data/gachaItems';
 import type { GachaItem } from '../../../types/dashboard';
 import { normalizeRarity } from './normalizeRarity';
+import { normalizeWorthUsd } from '../../../lib/money';
 
 // memuat daftar case gacha langsung dari backend dan memetakannya ke bentuk
 // katalog fe. bila backend belum mengirim case apa pun, fe jatuh ke katalog
@@ -44,8 +45,7 @@ export function useGachaCases() {
       category: 'consumable',
       rarity: normalizeRarity(item.rarity),
       dropRatePercent: 0,
-      // backend menyimpan worth dalam satuan sen dolar; fe memakai pecahan dl.
-      valueInDls: Number.isFinite(Number(item.worth)) ? Number(item.worth) / 100 : 0,
+      valueInUsd: normalizeWorthUsd(item.worth),
       icon: 'gemSack',
       description: `Hadiah dari case ${activeCase.name ?? activeCase.id}.`,
       glowColor: item.color || '#4b69ff',

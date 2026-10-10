@@ -7,6 +7,7 @@ import { useAuth } from '../../../lib/auth';
 import { ApiError, sellBackpack, redeemBackpack } from '../../../lib/api';
 import type { ApiBackpackItem } from '../../../lib/api';
 import { normalizeRarity } from '../gacha/normalizeRarity';
+import { formatUsd, normalizeWorthUsd } from '../../../lib/money';
 
 type SellStatus = { tone: 'ok' | 'error'; text: string } | null;
 
@@ -225,7 +226,7 @@ function InventoryCard({
   onClaim: () => void;
 }) {
   const rarity = normalizeRarity(item.rarity);
-  const worth = Number.isFinite(Number(item.worth)) ? Number(item.worth) : 0;
+  const worth = normalizeWorthUsd(item.worth);
   const count = Number(item.count) || 0;
 
   return (
@@ -233,7 +234,7 @@ function InventoryCard({
       <div className="w-full flex items-center justify-between gap-1 mb-2">
         <RarityChip rarity={rarity} />
         <div className="flex items-center gap-1 text-xs font-bold text-black tabular-nums">
-          <span>${worth.toFixed(2)}</span>
+          <span>{formatUsd(worth)}</span>
         </div>
       </div>
 
@@ -246,7 +247,7 @@ function InventoryCard({
             category: 'consumable',
             rarity,
             dropRatePercent: 0,
-            valueInDls: worth / 100,
+            valueInUsd: worth,
             icon: 'gemSack',
             description: '',
             glowColor: item.color || '#4b69ff',

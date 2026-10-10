@@ -29,7 +29,7 @@ const INITIAL_NOTIFICATIONS: AppNotification[] = [
   {
     id: 'notif-2',
     title: 'Bonus Weekend Lock',
-    message: 'Event akhir pekan: Main minigame mendapat bonus ekstra +10% Diamond Lock.',
+    message: 'Event akhir pekan: Main minigame mendapat bonus ekstra +10% saldo.',
     time: '1 jam lalu',
     read: false,
     type: 'event',
