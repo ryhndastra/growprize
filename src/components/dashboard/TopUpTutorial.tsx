@@ -34,12 +34,13 @@ const STEPS: TutorialStep[] = [
 
 // halaman isi saldo: form topup langsung ke backend, plus panduan bila perlu.
 export function TopUpTutorial({ onBack }: TopUpTutorialProps) {
-  const { refreshUser } = useAuth();
+  const { refreshUser, updateBalance } = useAuth();
 
   return (
     <div className="w-full select-none">
       <TopUpForm
-        onToppedUp={() => {
+        onToppedUp={(newBalance) => {
+          updateBalance(newBalance);
           void refreshUser();
         }}
       />

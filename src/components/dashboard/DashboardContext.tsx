@@ -50,13 +50,14 @@ interface DashboardActions {
    */
   spendUsd: (amountUsd: number) => boolean;
   addUsd: (deltaUsd: number) => void;
+  updateBalance: (amount: number | string) => void;
 }
 
 const DashboardContext = createContext<(DashboardState & DashboardActions) | null>(null);
 
 // backend menyimpan satu angka saldo dalam usd. fe menerimanya apa adanya tanpa
 // konversi denominasi; nilai tidak valid jadi nol dan saldo tidak pernah negatif.
-function balanceFromBackend(raw: number | null | undefined): WalletBalance {
+function balanceFromBackend(raw: number | string | null | undefined): WalletBalance {
   return { usd: normalizeUsd(raw) };
 }
 
@@ -84,7 +85,7 @@ export function DashboardProvider({
   children: ReactNode;
   onRequireLogin: (notice?: string) => void;
 }) {
-  const { user, isGuest } = useAuth();
+  const { user, isGuest, updateBalance } = useAuth();
 
   const [backpack, setBackpack] = useState<ApiBackpackItem[]>([]);
   const [backpackTotals, setBackpackTotals] = useState({ totalCount: 0, totalWorth: 0 });
@@ -216,6 +217,7 @@ export function DashboardProvider({
       refreshBackpack,
       spendUsd,
       addUsd,
+      updateBalance,
     }),
     [
       balance,
@@ -234,6 +236,7 @@ export function DashboardProvider({
       refreshBackpack,
       spendUsd,
       addUsd,
+      updateBalance,
     ]
   );
 

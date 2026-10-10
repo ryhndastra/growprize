@@ -12,7 +12,7 @@ import { GameInspectModal } from '../GameInspectModal';
 import { ArrowLeftGlyph, SearchGlyph } from '../glyphs';
 import { REEL_TOTAL_CARDS, WINNER_INDEX } from './reelGeometry';
 import { useGachaCases } from './useGachaCases';
-import { ApiError, rollGacha, type ApiCaseItem } from '../../../lib/api';
+import { ApiError, rollGacha, sellBackpack, type ApiCaseItem } from '../../../lib/api';
 import { normalizeWorthUsd } from '../../../lib/money';
 import { formatUsd } from '../../../lib/money';
 
@@ -84,7 +84,7 @@ function generateReel(winner: GachaItem, pool: GachaItem[]): { items: GachaItem[
 export function GachaArena() {
   const { isGuest, addItemToInventory, requireLogin, setActiveTab, refreshBackpack } =
     useDashboard();
-  const { refreshUser } = useAuth();
+  const { refreshUser, updateBalance } = useAuth();
   const { activeCase, catalogItems, isLoading, loadError } = useGachaCases();
 
   const [isRolling, setIsRolling] = useState(false);
@@ -189,6 +189,9 @@ export function GachaArena() {
         }
         const res = await rollWithRateLimit(activeCase.id, candidate.id);
         results.push(toReelItem(res.item, candidate));
+        if (res.balance !== undefined && res.balance !== null) {
+          updateBalance(res.balance);
+        }
       }
 
       if (!mountedRef.current) return;
@@ -245,6 +248,24 @@ export function GachaArena() {
 
   const handleClaimAll = () => {
     setModalOpen(false);
+  };
+
+  const handleInstantSell = async (items: GachaItem[]) => {
+    try {
+      const sellPayload = items
+        .filter((it) => it.itemId !== undefined)
+        .map((it) => ({ itemId: it.itemId!, quantity: 1 }));
+      if (sellPayload.length > 0) {
+        const res = await sellBackpack(sellPayload);
+        if (res.balance !== undefined && res.balance !== null) {
+          updateBalance(res.balance);
+        }
+        await refreshUser();
+        await refreshBackpack();
+      }
+    } catch (err) {
+      console.error('Instant sell error:', err);
+    }
   };
 
   return (
@@ -399,6 +420,7 @@ export function GachaArena() {
         isOpen={modalOpen}
         wonItems={wonItems}
         onClose={handleClaimAll}
+        onInstantSell={handleInstantSell}
       />
     </div>
   );

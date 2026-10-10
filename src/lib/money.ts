@@ -10,23 +10,29 @@ export function roundUsd(value: number): number {
 
 // format usd dua desimal dengan prefix dolar, dipakai semua label saldo dan harga.
 // nilai tidak valid jadi nol dan nilai negatif dijepit agar ui tidak pernah
-// menampilkan saldo minus.
-export function formatUsd(value: number): string {
-  const safe = Number.isFinite(value) && value > 0 ? value : 0;
+// menampilkan saldo minus. mendukung input number maupun string.
+export function formatUsd(value: number | string | null | undefined): string {
+  if (value === null || value === undefined || value === '') return '$0.00';
+  const num = typeof value === 'number' ? value : Number.parseFloat(String(value));
+  const safe = Number.isFinite(num) && num > 0 ? num : 0;
   return `$${safe.toFixed(2)}`;
 }
 
 // normalisasi saldo: nilai tidak valid jadi nol, nilai negatif dijepit ke nol.
-export function normalizeUsd(value: number | null | undefined): number {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
-  return roundUsd(value > 0 ? value : 0);
+// mendukung input number maupun string dari database (pg numeric).
+export function normalizeUsd(value: number | string | null | undefined): number {
+  if (value === null || value === undefined || value === '') return 0;
+  const parsed = typeof value === 'number' ? value : Number.parseFloat(String(value));
+  if (!Number.isFinite(parsed) || parsed <= 0) return 0;
+  return roundUsd(parsed);
 }
 
 // worth item dari backend sudah dalam usd murni (mis. 0.05, 15). satu jalur ini
 // dipakai semua pemetaan item agar nilai tidak pernah dibagi 100 di satu tempat
 // dan dibiarkan mentah di tempat lain.
 export function normalizeWorthUsd(value: number | string | null | undefined): number {
-  const parsed = typeof value === 'number' ? value : Number(value);
+  if (value === null || value === undefined || value === '') return 0;
+  const parsed = typeof value === 'number' ? value : Number.parseFloat(String(value));
   if (!Number.isFinite(parsed) || parsed <= 0) return 0;
   return roundUsd(parsed);
 }

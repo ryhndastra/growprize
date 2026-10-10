@@ -16,7 +16,7 @@ type SellStatus = { tone: 'ok' | 'error'; text: string } | null;
 export function InventoryGrid() {
   const { backpack, backpackTotals, isLoadingBackpack, isGuest, requireLogin, refreshBackpack } =
     useDashboard();
-  const { refreshUser } = useAuth();
+  const { refreshUser, updateBalance } = useAuth();
 
   const [filterRarity, setFilterRarity] = useState<'all' | RarityTier>('all');
   const [busy, setBusy] = useState(false);
@@ -40,6 +40,9 @@ export function InventoryGrid() {
     setStatus(null);
     try {
       const res = await sellBackpack([{ itemId: Number(item.item_id), quantity: 1 }]);
+      if (res.balance !== undefined && res.balance !== null) {
+        updateBalance(res.balance);
+      }
       setStatus({ tone: 'ok', text: res.message });
       await refreshUser();
       await refreshBackpack();
